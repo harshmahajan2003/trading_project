@@ -26,6 +26,11 @@ const transactionSchema = new mongoose.Schema(
       required: true,
     },
 
+    // 🔥 TRADE METADATA
+    symbol: { type: String },
+    quantity: { type: Number },
+    side: { type: String, enum: ["BUY", "SELL"] },
+
     reference: {
       type: String,
       default: null,

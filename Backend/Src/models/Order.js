@@ -30,10 +30,23 @@ const orderSchema = new mongoose.Schema(
       enum: ["BUY", "SELL"],
       required: true,
     },
-
+    type: {
+      type: String,
+      enum: ["MARKET", "LIMIT", "IPO"],
+      default: "MARKET",
+    },
+    triggerPrice: {
+      type: Number,
+    },
+    stopLoss: {
+      type: Number,
+    },
+    target: {
+      type: Number,
+    },
     status: {
       type: String,
-      enum: ["PENDING", "SUCCESS", "FAILED"], // ✅ ONLY THESE
+      enum: ["PENDING", "SUCCESS", "FAILED", "AUTO"],
       default: "SUCCESS",
     },
   },

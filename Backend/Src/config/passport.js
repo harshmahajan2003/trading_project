@@ -22,6 +22,12 @@ passport.use(
             email,
             password: "google_auth",
           });
+
+          // ✅ CREATE WALLET FOR GOOGLE USER
+          await require("../models/Wallet").create({
+            user: user._id,
+            balance: 0,
+          });
         }
 
         const token = jwt.sign(
@@ -39,3 +45,10 @@ passport.use(
     }
   )
 );
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser(async (id, done) => {
+  const user = await User.findById(id);
+  done(null, user);
+});
+
+module.exports = passport;

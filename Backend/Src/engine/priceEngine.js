@@ -1,57 +1,55 @@
-const Holding = require("../models/Holding");
-const Wallet = require("../models/Wallet");
-const Order = require("../models/Order");
-const Transaction = require("../models/Transaction");
+const Stock = require("../models/Stock");
+const Tick = require("../models/Tick");
+const processOrders = require("./orderEngine");
 
-/**
- * AUTO SELL WHEN SL / TARGET HIT
- */
-module.exports = async function checkStopLoss(io, symbol, price) {
-  try {
-    const holdings = await Holding.find({
-      symbol,
-      $or: [
-        { stopLoss: { $gte: price } },
-        { target: { $lte: price } },
-      ],
-    });
+const startPriceEngine = (io) => {
+  console.log("🚀 Price Engine Started");
 
-    for (const holding of holdings) {
-      const totalAmount = holding.quantity * price;
+  // Update prices every 3 seconds for simulation
+  setInterval(async () => {
+    try {
+      const stocks = await Stock.find();
 
-      // 🔥 UPDATE WALLET
-      let wallet = await Wallet.findOne({ user: holding.user });
-      if (!wallet) {
-        wallet = await Wallet.create({ user: holding.user, balance: 0 });
+      for (const stock of stocks) {
+        // Random change between -1% and +1%
+        const changePercent = (Math.random() * 2 - 1) * 0.01;
+        const priceChange = stock.price * changePercent;
+        const newPrice = Number((stock.price + priceChange).toFixed(2));
+
+        // Calculate total change percentage from original (or just current)
+        const displayChange = Number((changePercent * 100).toFixed(2));
+
+        const newVolume = (stock.volume || 0) + Math.floor(Math.random() * 5000) + 1000;
+
+        stock.price = newPrice;
+        stock.changePercent = displayChange;
+        stock.volume = newVolume;
+        await stock.save();
+
+        // 1. Create a Tick for candlestick generation
+        await Tick.create({
+          symbol: stock.symbol,
+          price: newPrice,
+          volume: newVolume
+        });
+
+        // 2. Emit update via Socket.io
+        io.emit("stockUpdate", {
+          symbol: stock.symbol,
+          price: newPrice,
+          change: displayChange,
+          name: stock.name,
+          volume: newVolume
+        });
+
+        // 3. Process Pending Orders / Risk Management
+        // We pass IO so it can notify users if their order was executed
+        processOrders(io, stock.symbol, newPrice);
       }
-
-      wallet.balance += totalAmount;
-      await wallet.save();
-
-      // 🔥 CREATE ORDER
-      await Order.create({
-        user: holding.user,
-        symbol,
-        quantity: holding.quantity,
-        price,
-        side: "SELL",
-        status: "AUTO",
-      });
-
-      // 🔥 TRANSACTION
-      await Transaction.create({
-        user: holding.user,
-        type: "CREDIT",
-        amount: totalAmount,
-        description: `AUTO SELL ${symbol}`,
-      });
-
-      // 🔥 DELETE HOLDING
-      await holding.deleteOne();
-
-      console.log(`🛑 AUTO SELL EXECUTED for ${symbol}`);
+    } catch (err) {
+      console.error("Price Engine Error:", err.message);
     }
-  } catch (err) {
-    console.error("STOP LOSS ENGINE ERROR:", err.message);
-  }
+  }, 3000);
 };
+
+module.exports = startPriceEngine;

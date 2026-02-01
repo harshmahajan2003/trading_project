@@ -18,7 +18,8 @@ router.get("/", protect, async (req, res) => {
   res.json(wallet);
 });
 
-// ADD MONEY (TEST)
+/*
+// ADD MONEY (TEST) - DEPRECATED: USE STRIPE PAYMENTS instead
 router.post("/add-money", protect, async (req, res) => {
   const { amount } = req.body;
 
@@ -40,5 +41,6 @@ router.post("/add-money", protect, async (req, res) => {
 
   res.json({ message: "Money added", balance: wallet.balance });
 });
+*/
 
 module.exports = router;

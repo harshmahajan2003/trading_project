@@ -7,19 +7,36 @@ const genToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
 const register = async (req, res) => {
-  const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-  if (![name, email, password].every(required))
-    return res.status(400).json({ message: "All fields required" });
+    if (![name, email, password].every(required))
+      return res.status(400).json({ message: "All fields are required" });
 
-  const exists = await User.findOne({ email });
-  if (exists)
-    return res.status(400).json({ message: "Email already exists" });
+    // Name validation
+    if (name.trim().length < 2)
+      return res.status(400).json({ message: "Name must be at least 2 characters" });
 
-  const user = await User.create({ name, email, password });
-  await Wallet.create({ user: user._id });
+    // Email validation
+    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+    if (!emailRegex.test(email))
+      return res.status(400).json({ message: "Invalid email format" });
 
-  res.status(201).json({ token: genToken(user._id) });
+    // Password validation
+    if (password.length < 6)
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+
+    const exists = await User.findOne({ email });
+    if (exists)
+      return res.status(400).json({ message: "Email already exists" });
+
+    const user = await User.create({ name, email, password });
+    await Wallet.create({ user: user._id });
+
+    res.status(201).json({ token: genToken(user._id) });
+  } catch (err) {
+    res.status(500).json({ message: "Registration failed" });
+  }
 };
 
 const login = async (req, res) => {

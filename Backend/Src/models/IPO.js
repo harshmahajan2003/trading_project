@@ -7,10 +7,24 @@ const ipoSchema = new mongoose.Schema(
     price: Number,
     totalShares: Number,
     availableShares: Number,
+    minLot: {
+      type: Number,
+      default: 1,
+    },
+    lotSize: {
+      type: Number,
+      default: 10, // shares per lot
+    },
+    description: {
+      type: String,
+      default: "",
+    },
+    openDate: Date,
+    closeDate: Date,
     status: {
       type: String,
-      enum: ["OPEN", "CLOSED"],
-      default: "OPEN",
+      enum: ["UPCOMING", "OPEN", "CLOSED", "ALLOTTED", "LISTED"],
+      default: "UPCOMING",
     },
   },
   { timestamps: true }

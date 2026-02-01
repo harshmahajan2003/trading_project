@@ -2,10 +2,23 @@ const express = require("express");
 const router = express.Router();
 
 const { protect } = require("../middleware/auth.middleware");
-const { isAdmin } = require("../middleware/admin.middleware");
-const { createIPO, getIPOs, applyIPO } = require("../controllers/ipo.controller");
+const { adminOnly } = require("../middleware/admin.middleware");
+const {
+    createIPO,
+    getIPOs,
+    applyIPO,
+    getIPOApplications,
+    runBulkAllotment,
+    listIPOAsStock
+} = require("../controllers/ipo.controller");
 
-router.post("/", protect, isAdmin, createIPO);
+// Admin routes
+router.post("/admin", protect, adminOnly, createIPO);
+router.get("/admin/applications/:ipoId", protect, adminOnly, getIPOApplications);
+router.post("/admin/run-allotment", protect, adminOnly, runBulkAllotment);
+router.post("/admin/list", protect, adminOnly, listIPOAsStock);
+
+// User routes
 router.get("/", protect, getIPOs);
 router.post("/apply", protect, applyIPO);
 
