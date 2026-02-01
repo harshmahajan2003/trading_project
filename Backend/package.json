@@ -4,8 +4,8 @@
   "description": "Production level trading backend",
   "main": "src/server.js",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "dev": "nodemon Src/server.js",
+    "start": "node Src/server.js"
   },
   "keywords": [],
   "author": "Harsh",
