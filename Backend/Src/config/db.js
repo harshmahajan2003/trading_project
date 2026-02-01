@@ -6,6 +6,8 @@ const connectDB = async () => {
       throw new Error("MONGO_URI missing in .env");
     }
 
+    const maskedUri = process.env.MONGO_URI.replace(/:([^@]+)@/, ":****@");
+    console.log("Connecting to MongoDB:", maskedUri);
     await mongoose.connect(process.env.MONGO_URI);
     console.log("MongoDB connected:", mongoose.connection.name);
   } catch (err) {
