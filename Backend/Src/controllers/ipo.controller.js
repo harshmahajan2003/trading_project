@@ -5,6 +5,7 @@ const Order = require("../models/Order");
 const Holding = require("../models/Holding");
 const Notification = require("../models/Notification");
 const Stock = require("../models/Stock");
+const emailService = require("../services/emailService");
 
 // ADMIN: CREATE IPO
 const createIPO = async (req, res) => {
@@ -196,6 +197,11 @@ const runBulkAllotment = async (req, res) => {
           title: "IPO Allotment Success! 🎉",
           message: `Congratulations! ${app.quantity} shares of ${ipo.symbol} IPO have been allotted.`,
           type: "IPO_UPDATE"
+        });
+
+        // 5. Send Email (Asynchronous)
+        emailService.sendAllotmentEmail(app.user, ipo, app.quantity).catch(err => {
+          console.error(`❌ Allotment Email Error for ${app.user.email}:`, err.message);
         });
 
       } else {
