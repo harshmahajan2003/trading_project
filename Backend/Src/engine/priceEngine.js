@@ -9,6 +9,16 @@ const startPriceEngine = (io) => {
   setInterval(async () => {
     try {
       const stocks = await Stock.find();
+      if (stocks.length === 0) {
+        console.log("⚠️ Price Engine: No stocks found in database");
+        return;
+      }
+
+      // Heartbeat once every few cycles to verify engine is ticking
+      if (Math.random() > 0.9) {
+        console.log(`⚙️ Price Engine Ticking: Processing ${stocks.length} stocks`);
+        io.emit('engine_heartbeat', { stocksProcessed: stocks.length });
+      }
 
       for (const stock of stocks) {
         // Random change between -1% and +1%
