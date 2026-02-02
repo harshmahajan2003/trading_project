@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 const Portfolio = () => {
     const { balance, refreshBalance } = useWallet();
     const [holdings, setHoldings] = useState([]);
+    const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [livePrices, setLivePrices] = useState({});
     const [allStocks, setAllStocks] = useState([]);

@@ -74,57 +74,59 @@ const ProtectedLayout = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/auth-success" element={<AuthSuccess />} />
+      <WalletProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/auth-success" element={<AuthSuccess />} />
 
-          <Route path="/dashboard" element={
-            <ProtectedLayout>
-              <Dashboard />
-            </ProtectedLayout>
-          } />
-          <Route path="/market" element={
-            <ProtectedLayout>
-              <Market />
-            </ProtectedLayout>
-          } />
-          <Route path="/market/:symbol" element={
-            <ProtectedLayout>
-              <StockDetail />
-            </ProtectedLayout>
-          } />
-          <Route path="/portfolio" element={
-            <ProtectedLayout>
-              <Portfolio />
-            </ProtectedLayout>
-          } />
-          <Route path="/activity" element={
-            <ProtectedLayout>
-              <Activity />
-            </ProtectedLayout>
-          } />
-          <Route path="/add-funds" element={
-            <ProtectedLayout>
-              <AddFunds />
-            </ProtectedLayout>
-          } />
-          <Route path="/ipo" element={
-            <ProtectedLayout>
-              <IPOHub />
-            </ProtectedLayout>
-          } />
-          <Route element={<AdminRoute />}>
-            <Route path="/admin/*" element={
-              <AdminLayout>
-                <AdminDashboard />
-              </AdminLayout>
+            <Route path="/dashboard" element={
+              <ProtectedLayout>
+                <Dashboard />
+              </ProtectedLayout>
             } />
-          </Route>
-        </Routes>
-      </Router>
+            <Route path="/market" element={
+              <ProtectedLayout>
+                <Market />
+              </ProtectedLayout>
+            } />
+            <Route path="/market/:symbol" element={
+              <ProtectedLayout>
+                <StockDetail />
+              </ProtectedLayout>
+            } />
+            <Route path="/portfolio" element={
+              <ProtectedLayout>
+                <Portfolio />
+              </ProtectedLayout>
+            } />
+            <Route path="/activity" element={
+              <ProtectedLayout>
+                <Activity />
+              </ProtectedLayout>
+            } />
+            <Route path="/add-funds" element={
+              <ProtectedLayout>
+                <AddFunds />
+              </ProtectedLayout>
+            } />
+            <Route path="/ipo" element={
+              <ProtectedLayout>
+                <IPOHub />
+              </ProtectedLayout>
+            } />
+            <Route element={<AdminRoute />}>
+              <Route path="/admin/*" element={
+                <AdminLayout>
+                  <AdminDashboard />
+                </AdminLayout>
+              } />
+            </Route>
+          </Routes>
+        </Router>
+      </WalletProvider>
     </AuthProvider>
   );
 }

@@ -7,6 +7,7 @@ import { walletService, tradeService, stockService } from '../services/api';
 import { socket } from '../services/socket';
 import { useWallet } from '../context/WalletContext';
 import QuickTradeModal from '../components/QuickTradeModal';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
     const { balance, refreshBalance } = useWallet();
