@@ -141,7 +141,7 @@ const runBulkAllotment = async (req, res) => {
       return res.status(400).json({ message: "IPO already allotted or listed" });
     }
 
-    const apps = await IPOApplication.find({ ipo: ipoId, status: "PENDING" });
+    const apps = await IPOApplication.find({ ipo: ipoId, status: "PENDING" }).populate("user");
     if (apps.length === 0) {
       return res.status(400).json({ message: "No pending applications found" });
     }

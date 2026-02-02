@@ -44,7 +44,7 @@ const Support = () => {
                             How can we <span className="text-indigo-200">help?</span>
                         </h1>
                         <p className="text-indigo-100/80 text-lg max-w-xl font-medium leading-relaxed">
-                            Bhai, koi bhi dikat ho toh batao! Humari team 24/7 ready hai aapki help karne ke liye.
+                            If you face any issues, let us know! Our team is ready 24/7 to assist you.
                         </p>
                     </div>
                 </div>
@@ -65,7 +65,7 @@ const Support = () => {
                                 </div>
                                 <h2 className="text-2xl font-bold text-white mb-2">Message Sent!</h2>
                                 <p className="text-slate-400 max-w-xs mx-auto mb-8">
-                                    Aapka message humein mil gaya hai. Hum jald hi aapse contact karenge.
+                                    We've received your message. We'll get back to you shortly.
                                 </p>
                                 <button
                                     onClick={() => setSuccess(false)}
@@ -152,9 +152,9 @@ const Support = () => {
                     </div>
 
                     <div className="bg-indigo-600/10 border border-indigo-500/20 rounded-3xl p-6">
-                        <h4 className="text-indigo-400 font-bold mb-2">Pro Tip Bhai!</h4>
+                        <h4 className="text-indigo-400 font-bold mb-2">Pro Tip!</h4>
                         <p className="text-sm text-indigo-300/80 leading-relaxed">
-                            Agar order execution mein koi issue hai toh order ID zaroor mention karein. Isse hum jaldi resolution de payenge.
+                            If there is an issue with order execution, please mention the Order ID. This will help us provide a faster resolution.
                         </p>
                     </div>
                 </div>

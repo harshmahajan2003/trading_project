@@ -7,6 +7,16 @@ const nodemailer = require("nodemailer");
 
 const sendEmail = async (to, subject, html) => {
   try {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error("❌ Email Service: EMAIL_USER or EMAIL_PASS missing in environment");
+      return false;
+    }
+
+    if (!to) {
+      console.error("❌ Email Service: Recipient address (to) is missing");
+      return false;
+    }
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -22,11 +32,13 @@ const sendEmail = async (to, subject, html) => {
       html,
     };
 
-    await transporter.sendMail(mailOptions);
-    console.log(`📧 Email sent to ${to}: ${subject}`);
+    console.log(`📡 Attempting to send email to ${to}...`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`✅ Email sent successfully! ID: ${info.messageId}`);
     return true;
   } catch (err) {
-    console.error("❌ Email sending failed:", err.message);
+    console.error("❌ Email sending failed ERROR:", err.message);
+    if (err.stack) console.error("DEBUG STACK:", err.stack);
     return false;
   }
 };
