@@ -1,14 +1,16 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
 /**
  * EMAIL SERVICE
- * Handles sending transactional emails to users
+ * Handles sending transactional emails to users using Resend API
  */
+
+const resend = new Resend(process.env.RESEND_API);
 
 const sendEmail = async (to, subject, html) => {
   try {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.error("❌ Email Service: EMAIL_USER or EMAIL_PASS missing in environment");
+    if (!process.env.RESEND_API) {
+      console.error("❌ Email Service: RESEND_API missing in environment");
       return false;
     }
 
@@ -17,24 +19,21 @@ const sendEmail = async (to, subject, html) => {
       return false;
     }
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
+    console.log(`📡 Attempting to send email via Resend to ${to}...`);
+
+    const { data, error } = await resend.emails.send({
+      from: 'Trade AI <onboarding@resend.dev>',
+      to: [to],
+      subject: subject,
+      html: html,
     });
 
-    const mailOptions = {
-      from: `"TRADE.AI" <${process.env.EMAIL_USER}>`,
-      to,
-      subject,
-      html,
-    };
+    if (error) {
+      console.error("❌ Resend API Error:", error.message);
+      return false;
+    }
 
-    console.log(`📡 Attempting to send email to ${to}...`);
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`✅ Email sent successfully! ID: ${info.messageId}`);
+    console.log(`✅ Email sent successfully! ID: ${data.id}`);
     return true;
   } catch (err) {
     console.error("❌ Email sending failed ERROR:", err.message);
