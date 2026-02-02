@@ -107,7 +107,7 @@ const Landing = () => {
 
             {/* Stats Grid */}
             <section className="relative z-10 px-8 py-20 bg-slate-900/40 border-y border-slate-800/50 backdrop-blur-sm">
-                <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 text-center">
                     <div>
                         <h3 className="text-4xl font-black text-white mb-2">₹10Cr+</h3>
                         <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Volume Processed</p>

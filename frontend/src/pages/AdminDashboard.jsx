@@ -321,87 +321,91 @@ const AdminDashboard = () => {
             {/* Tab Content */}
             <div className="bg-slate-900/40 border border-slate-800 rounded-3xl overflow-hidden backdrop-blur-sm">
                 {activeTab === 'users' && (
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="bg-slate-800/20 border-b border-slate-800 text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                                <th className="px-8 py-5">User Account</th>
-                                <th className="px-8 py-5">Membership</th>
-                                <th className="px-8 py-5">Joined On</th>
-                                <th className="px-8 py-5 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-800">
-                            {users.map(user => (
-                                <tr key={user._id} className="hover:bg-indigo-600/5 transition-all">
-                                    <td className="px-8 py-5">
-                                        <div className="font-bold text-white">{user.name || 'Anonymous'}</div>
-                                        <div className="text-xs text-slate-500 font-mono italic">{user.email || 'no-email'}</div>
-                                    </td>
-                                    <td className="px-8 py-5">
-                                        <span className={cn(
-                                            "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
-                                            user.isActive ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"
-                                        )}>
-                                            {user.isActive ? <ShieldCheck className="w-3 h-3" /> : <ShieldAlert className="w-3 h-3" />}
-                                            {user.isActive ? 'Active' : 'Blocked'}
-                                        </span>
-                                    </td>
-                                    <td className="px-8 py-5 text-sm text-slate-500 font-medium">
-                                        {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN') : 'N/A'}
-                                    </td>
-                                    <td className="px-8 py-5 text-right">
-                                        <button
-                                            onClick={() => handleBlockUser(user._id)}
-                                            className={cn(
-                                                "text-[10px] font-black px-4 py-2 rounded-xl transition-all uppercase tracking-widest",
-                                                user.isActive ? "text-rose-500 hover:bg-rose-500/10 border border-rose-500/20" : "text-emerald-500 hover:bg-emerald-500/10 border border-emerald-500/20"
-                                            )}
-                                        >
-                                            {user.isActive ? 'Block' : 'Unblock'}
-                                        </button>
-                                    </td>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left min-w-[700px]">
+                            <thead>
+                                <tr className="bg-slate-800/20 border-b border-slate-800 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                                    <th className="px-8 py-5">User Account</th>
+                                    <th className="px-8 py-5">Membership</th>
+                                    <th className="px-8 py-5">Joined On</th>
+                                    <th className="px-8 py-5 text-right">Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-slate-800">
+                                {users.map(user => (
+                                    <tr key={user._id} className="hover:bg-indigo-600/5 transition-all">
+                                        <td className="px-8 py-5">
+                                            <div className="font-bold text-white">{user.name || 'Anonymous'}</div>
+                                            <div className="text-xs text-slate-500 font-mono italic">{user.email || 'no-email'}</div>
+                                        </td>
+                                        <td className="px-8 py-5">
+                                            <span className={cn(
+                                                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
+                                                user.isActive ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"
+                                            )}>
+                                                {user.isActive ? <ShieldCheck className="w-3 h-3" /> : <ShieldAlert className="w-3 h-3" />}
+                                                {user.isActive ? 'Active' : 'Blocked'}
+                                            </span>
+                                        </td>
+                                        <td className="px-8 py-5 text-sm text-slate-500 font-medium">
+                                            {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN') : 'N/A'}
+                                        </td>
+                                        <td className="px-8 py-5 text-right">
+                                            <button
+                                                onClick={() => handleBlockUser(user._id)}
+                                                className={cn(
+                                                    "text-[10px] font-black px-4 py-2 rounded-xl transition-all uppercase tracking-widest",
+                                                    user.isActive ? "text-rose-500 hover:bg-rose-500/10 border border-rose-500/20" : "text-emerald-500 hover:bg-emerald-500/10 border border-emerald-500/20"
+                                                )}
+                                            >
+                                                {user.isActive ? 'Block' : 'Unblock'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
 
                 {activeTab === 'stocks' && (
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="bg-slate-800/20 border-b border-slate-800 text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                                <th className="px-8 py-5">Asset Symbol</th>
-                                <th className="px-8 py-5">Company Name</th>
-                                <th className="px-8 py-5 text-right">Current Price</th>
-                                <th className="px-8 py-5 text-right">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-800">
-                            {stocks.map(stock => (
-                                <tr key={stock._id} className="hover:bg-indigo-600/5 transition-all">
-                                    <td className="px-8 py-5">
-                                        <span className="font-black text-white px-2 py-1 bg-slate-800 rounded-lg border border-slate-700">{stock.symbol || '---'}</span>
-                                    </td>
-                                    <td className="px-8 py-5 font-bold text-slate-300">{stock.name || '---'}</td>
-                                    <td className="px-8 py-5 text-right font-black text-white text-lg">
-                                        ₹{(stock.price || 0).toLocaleString('en-IN')}
-                                    </td>
-                                    <td className="px-8 py-5 text-right">
-                                        <div className="flex items-center justify-end gap-3">
-                                            <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full uppercase">LISTED</span>
-                                            <button
-                                                onClick={() => setDeleteConfirm({ show: true, stock })}
-                                                className="p-2 text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
-                                                title="Delete Asset"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </td>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left min-w-[700px]">
+                            <thead>
+                                <tr className="bg-slate-800/20 border-b border-slate-800 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                                    <th className="px-8 py-5">Asset Symbol</th>
+                                    <th className="px-8 py-5">Company Name</th>
+                                    <th className="px-8 py-5 text-right">Current Price</th>
+                                    <th className="px-8 py-5 text-right">Status</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-slate-800">
+                                {stocks.map(stock => (
+                                    <tr key={stock._id} className="hover:bg-indigo-600/5 transition-all">
+                                        <td className="px-8 py-5">
+                                            <span className="font-black text-white px-2 py-1 bg-slate-800 rounded-lg border border-slate-700">{stock.symbol || '---'}</span>
+                                        </td>
+                                        <td className="px-8 py-5 font-bold text-slate-300">{stock.name || '---'}</td>
+                                        <td className="px-8 py-5 text-right font-black text-white text-lg">
+                                            ₹{(stock.price || 0).toLocaleString('en-IN')}
+                                        </td>
+                                        <td className="px-8 py-5 text-right">
+                                            <div className="flex items-center justify-end gap-3">
+                                                <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full uppercase">LISTED</span>
+                                                <button
+                                                    onClick={() => setDeleteConfirm({ show: true, stock })}
+                                                    className="p-2 text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
+                                                    title="Delete Asset"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
 
                 {activeTab === 'ipo' && (
@@ -637,47 +641,49 @@ const AdminDashboard = () => {
                 )}
 
                 {activeTab === 'orders' && (
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="bg-slate-800/20 border-b border-slate-800 text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                                <th className="px-8 py-5">Order ID</th>
-                                <th className="px-8 py-5">User Account</th>
-                                <th className="px-8 py-5">Asset</th>
-                                <th className="px-8 py-5">Value</th>
-                                <th className="px-8 py-5 text-right">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-800">
-                            {orders.length > 0 ? orders.map(order => (
-                                <tr key={order._id} className="hover:bg-white/5 transition-all">
-                                    <td className="px-8 py-5 text-[10px] font-mono text-slate-500 uppercase">{order._id.slice(-8)}</td>
-                                    <td className="px-8 py-5 font-bold text-white uppercase text-sm">
-                                        {order.user?.name || 'Anonymous'}
-                                    </td>
-                                    <td className="px-8 py-5">
-                                        <div className="flex items-center gap-2">
-                                            <span className={cn(
-                                                "font-black text-[10px] p-1.5 rounded-lg border",
-                                                order.side === 'BUY' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-rose-500/10 text-rose-500 border-rose-500/20"
-                                            )}>{order.side}</span>
-                                            <span className="font-bold text-slate-300 tracking-tight uppercase">{order.symbol}</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-8 py-5">
-                                        <p className="font-black text-white">₹{(order.price * order.quantity).toLocaleString()}</p>
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase">{order.quantity} Shares @ ₹{order.price}</p>
-                                    </td>
-                                    <td className="px-8 py-5 text-right">
-                                        <span className="text-[10px] font-black text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full uppercase tracking-widest">EXECUTED</span>
-                                    </td>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left min-w-[800px]">
+                            <thead>
+                                <tr className="bg-slate-800/20 border-b border-slate-800 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                                    <th className="px-8 py-5">Order ID</th>
+                                    <th className="px-8 py-5">User Account</th>
+                                    <th className="px-8 py-5">Asset</th>
+                                    <th className="px-8 py-5">Value</th>
+                                    <th className="px-8 py-5 text-right">Status</th>
                                 </tr>
-                            )) : (
-                                <tr>
-                                    <td colSpan="5" className="px-8 py-20 text-center text-slate-500 font-bold uppercase tracking-widest text-xs">No orders processed yet</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-slate-800">
+                                {orders.length > 0 ? orders.map(order => (
+                                    <tr key={order._id} className="hover:bg-white/5 transition-all">
+                                        <td className="px-8 py-5 text-[10px] font-mono text-slate-500 uppercase">{order._id.slice(-8)}</td>
+                                        <td className="px-8 py-5 font-bold text-white uppercase text-sm">
+                                            {order.user?.name || 'Anonymous'}
+                                        </td>
+                                        <td className="px-8 py-5">
+                                            <div className="flex items-center gap-2">
+                                                <span className={cn(
+                                                    "font-black text-[10px] p-1.5 rounded-lg border",
+                                                    order.side === 'BUY' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-rose-500/10 text-rose-500 border-rose-500/20"
+                                                )}>{order.side}</span>
+                                                <span className="font-bold text-slate-300 tracking-tight uppercase">{order.symbol}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-5">
+                                            <p className="font-black text-white">₹{(order.price * order.quantity).toLocaleString()}</p>
+                                            <p className="text-[10px] text-slate-500 font-bold uppercase">{order.quantity} Shares @ ₹{order.price}</p>
+                                        </td>
+                                        <td className="px-8 py-5 text-right">
+                                            <span className="text-[10px] font-black text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full uppercase tracking-widest">EXECUTED</span>
+                                        </td>
+                                    </tr>
+                                )) : (
+                                    <tr>
+                                        <td colSpan="5" className="px-8 py-20 text-center text-slate-500 font-bold uppercase tracking-widest text-xs">No orders processed yet</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
 
