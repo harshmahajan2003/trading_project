@@ -100,7 +100,7 @@ const Navbar = () => {
                 <div className="flex items-center gap-3 pl-0 md:pl-6 border-l-0 md:border-l border-slate-800">
                     <div className="text-right hidden sm:block">
                         <p className="text-sm font-medium text-slate-100">{user?.name}</p>
-                        <p className="text-xs text-slate-500 capitalize">{user?.email}</p>
+                        <p className="text-xs text-slate-500">{user?.email}</p>
                     </div>
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/20">
                         {user?.name?.[0].toUpperCase()}
