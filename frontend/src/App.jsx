@@ -56,7 +56,7 @@ const ProtectedLayout = ({ children }) => {
               </svg>
             </button>
             <h1 className="text-xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent tracking-tighter">
-              TRADE.AI
+              Trade AI
             </h1>
           </div>
         </header>

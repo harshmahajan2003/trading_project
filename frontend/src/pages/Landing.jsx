@@ -22,7 +22,7 @@ const Landing = () => {
                         <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
                     </div>
                     <span className="text-xl md:text-2xl font-black bg-gradient-to-r from-white to-slate-500 bg-clip-text text-transparent tracking-tighter">
-                        TRADE.AI
+                        Trade AI
                     </span>
                 </div>
                 <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-400 uppercase tracking-widest">
@@ -167,7 +167,7 @@ const Landing = () => {
                             <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center overflow-hidden p-1">
                                 <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
                             </div>
-                            <span className="text-xl font-black text-white tracking-widest uppercase">TRADE.AI</span>
+                            <span className="text-xl font-black text-white tracking-widest uppercase">Trade AI</span>
                         </div>
                         <p className="text-slate-500 text-sm max-w-sm leading-relaxed">
                             The world's most advanced social trading application. Build your future today with Trade.AI

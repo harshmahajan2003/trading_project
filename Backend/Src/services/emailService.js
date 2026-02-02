@@ -66,7 +66,7 @@ const sendAllotmentEmail = async (user, ipo, quantity) => {
 
       <p>These shares have been added to your portfolio and will be available for trading once the IPO is listed on the exchange.</p>
       <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-      <p style="font-size: 12px; color: #94a3b8;">This is an automated message from TRADE.AI.</p>
+      <p style="font-size: 12px; color: #94a3b8;">This is an automated message from Trade AI.</p>
     </div>
   `;
   return await sendEmail(user.email, subject, html);
@@ -84,7 +84,7 @@ const sendIPOApplicationEmail = async (user, ipo, lots, amount) => {
       </div>
       <p>We will notify you once the allotment process is completed.</p>
       <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-      <p style="font-size: 12px; color: #94a3b8;">This is an automated message from TRADE.AI.</p>
+      <p style="font-size: 12px; color: #94a3b8;">This is an automated message from Trade AI.</p>
     </div>
   `;
   return await sendEmail(user.email, subject, html);
@@ -102,7 +102,7 @@ const sendIPORejectionEmail = async (user, ipo, amount) => {
       </div>
       <p>Your blocked funds have been credited back to your wallet balance immediately.</p>
       <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-      <p style="font-size: 12px; color: #94a3b8;">This is an automated message from TRADE.AI.</p>
+      <p style="font-size: 12px; color: #94a3b8;">This is an automated message from Trade AI.</p>
     </div>
   `;
   return await sendEmail(user.email, subject, html);
@@ -123,7 +123,7 @@ const sendDepositEmail = async (user, amount) => {
       </div>
       <p>You can now use these funds to buy stocks or apply for IPOs.</p>
       <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-      <p style="font-size: 12px; color: #94a3b8;">This is an automated message from TRADE.AI.</p>
+      <p style="font-size: 12px; color: #94a3b8;">This is an automated message from Trade AI.</p>
     </div>
   `;
   return await sendEmail(user.email, subject, html);
@@ -148,7 +148,7 @@ const sendTradeEmail = async (user, order) => {
       </div>
       <p>Check your portfolio for updated holdings.</p>
       <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-      <p style="font-size: 12px; color: #94a3b8;">This is an automated message from TRADE.AI.</p>
+      <p style="font-size: 12px; color: #94a3b8;">This is an automated message from Trade AI.</p>
     </div>
   `;
   return await sendEmail(user.email, subject, html);
@@ -172,7 +172,7 @@ const sendSupportEmail = async (user, subject, message) => {
 
       <p style="font-size: 12px; color: #94a3b8;">User ID: ${user._id}</p>
       <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-      <p style="font-size: 12px; color: #94a3b8;">This query was sent via the TRADE.AI Support Portal.</p>
+      <p style="font-size: 12px; color: #94a3b8;">This query was sent via the Trade AI Support Portal.</p>
     </div>
   `;
   return await sendEmail(adminEmail, emailSubject, html);

@@ -49,7 +49,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
                         </div>
                         <h1 className="text-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent tracking-tighter">
-                            TRADE.AI
+                            Trade AI
                         </h1>
                     </Link>
                     <button onClick={onClose} className="p-6 lg:hidden text-slate-400">
