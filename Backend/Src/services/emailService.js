@@ -1,15 +1,15 @@
-const { Resend } = require("resend");
+const axios = require("axios");
 
 /**
  * EMAIL SERVICE
- * Handles sending transactional emails to users using Resend API
+ * Handles sending transactional emails to users using Resend API (Direct Https)
  */
-
-const resend = new Resend(process.env.RESEND_API);
 
 const sendEmail = async (to, subject, html) => {
   try {
-    if (!process.env.RESEND_API) {
+    const apiKey = process.env.RESEND_API;
+
+    if (!apiKey) {
       console.error("❌ Email Service: RESEND_API missing in environment");
       return false;
     }
@@ -19,26 +19,32 @@ const sendEmail = async (to, subject, html) => {
       return false;
     }
 
-    console.log(`📡 Attempting to send email via Resend to ${to}...`);
+    console.log(`📡 Attempting to send email via Resend API to ${to}...`);
 
-    // Resend free tier sends only to verified emails/your own account
-    const { data, error } = await resend.emails.send({
+    const response = await axios.post('https://api.resend.com/emails', {
       from: 'Trade AI <onboarding@resend.dev>',
       to: [to],
       subject: subject,
       html: html,
+    }, {
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      }
     });
 
-    if (error) {
-      console.error("❌ Resend API Error:", error.message);
+    if (response.status === 200 || response.status === 201) {
+      console.log(`✅ Email sent successfully! ID: ${response.data.id}`);
+      return true;
+    } else {
+      console.error("❌ Resend API failed with status:", response.status);
       return false;
     }
-
-    console.log(`✅ Email sent successfully! ID: ${data?.id}`);
-    return true;
   } catch (err) {
-    console.error("❌ Email sending failed ERROR:", err.message);
-    if (err.stack) console.error("DEBUG STACK:", err.stack);
+    console.error("❌ Email sending failed ERROR:", err.response?.data?.message || err.message);
+    if (err.response?.data) {
+      console.error("Resend Error Detail:", JSON.stringify(err.response.data));
+    }
     return false;
   }
 };
