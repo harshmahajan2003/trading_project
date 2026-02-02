@@ -120,7 +120,7 @@ const Support = () => {
                                         <Loader2 className="w-6 h-6 animate-spin" />
                                     ) : (
                                         <>
-                                            <span>Abhi help chahiye</span>
+                                            <span>Get Support Now</span>
                                             <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                                         </>
                                     )}
@@ -146,26 +146,6 @@ const Support = () => {
                                 <div>
                                     <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Email Us</p>
                                     <p className="text-white font-medium break-all text-sm">trading.ai2006@gmail.com</p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-950/50 border border-slate-800/50 hover:bg-slate-800/50 transition-colors">
-                                <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
-                                    <Phone className="w-5 h-5 text-green-500" />
-                                </div>
-                                <div>
-                                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Call Us</p>
-                                    <p className="text-white font-medium text-sm">+91 98765 43210</p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-950/50 border border-slate-800/50 hover:bg-slate-800/50 transition-colors">
-                                <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center shrink-0">
-                                    <MapPin className="w-5 h-5 text-purple-500" />
-                                </div>
-                                <div>
-                                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Our Office</p>
-                                    <p className="text-white font-medium text-sm">Financial District, Mumbai, India 🇮🇳</p>
                                 </div>
                             </div>
                         </div>
