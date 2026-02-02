@@ -3,14 +3,14 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Briefcase, TrendingUp, TrendingDown, DollarSign, Activity, Timer, Wallet, Zap, ShieldCheck, ArrowRight, Info, Plus, Minus, Loader2 } from 'lucide-react';
 import { tradeService, walletService, paymentService, stockService } from '../services/api';
 import { socket } from '../services/socket';
+import { useWallet } from '../context/WalletContext';
 import { cn } from '../utils/cn';
 import QuickTradeModal from '../components/QuickTradeModal';
 import { useNavigate } from 'react-router-dom';
 
 const Portfolio = () => {
+    const { balance, refreshBalance } = useWallet();
     const [holdings, setHoldings] = useState([]);
-    const [orders, setOrders] = useState([]);
-    const [balance, setBalance] = useState(0);
     const [loading, setLoading] = useState(true);
     const [livePrices, setLivePrices] = useState({});
     const [allStocks, setAllStocks] = useState([]);
@@ -21,15 +21,13 @@ const Portfolio = () => {
 
     const fetchPortfolio = async () => {
         try {
-            const [holdingsData, balData, ordersData, stocksData] = await Promise.all([
+            const [holdingsData, ordersData, stocksData] = await Promise.all([
                 tradeService.getHoldings(),
-                walletService.getBalance(),
                 tradeService.getOrders(),
                 stockService.getStocks()
             ]);
 
             setHoldings(Array.isArray(holdingsData) ? holdingsData : []);
-            setBalance(balData?.balance || 0);
             setOrders(Array.isArray(ordersData) ? ordersData : []);
             setAllStocks(Array.isArray(stocksData) ? stocksData : []);
 
@@ -81,9 +79,11 @@ const Portfolio = () => {
                     console.error("❌ Payment verification failed:", err);
                 } finally {
                     fetchPortfolio();
+                    refreshBalance();
                 }
             } else {
                 fetchPortfolio();
+                refreshBalance();
             }
         };
 

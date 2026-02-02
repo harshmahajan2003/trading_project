@@ -5,11 +5,11 @@ import { cn } from '../utils/cn';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { walletService, tradeService, stockService } from '../services/api';
 import { socket } from '../services/socket';
+import { useWallet } from '../context/WalletContext';
 import QuickTradeModal from '../components/QuickTradeModal';
-import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-    const [balance, setBalance] = useState(0);
+    const { balance, refreshBalance } = useWallet();
     const [holdings, setHoldings] = useState([]);
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -25,12 +25,10 @@ const Dashboard = () => {
 
     const fetchData = async () => {
         try {
-            const [walletData, holdingsData, transData] = await Promise.all([
-                walletService.getBalance(),
+            const [holdingsData, transData] = await Promise.all([
                 tradeService.getHoldings(),
                 tradeService.getTransactions()
             ]);
-            setBalance(walletData?.balance || 0);
             setHoldings(Array.isArray(holdingsData) ? holdingsData : []);
             setTransactions(Array.isArray(transData) ? transData : []);
 
@@ -56,12 +54,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchData();
-
-        // Listen for real-time wallet updates
-        const handleWalletUpdate = (data) => {
-            if (data?.balance !== undefined) setBalance(data.balance);
-        };
-        socket.on('walletUpdate', handleWalletUpdate);
+        refreshBalance();
 
         const handlePriceUpdate = (data) => {
             if (data && data.symbol) {
@@ -77,7 +70,6 @@ const Dashboard = () => {
         socket.on('stockUpdate', handlePriceUpdate);
 
         return () => {
-            socket.off('walletUpdate', handleWalletUpdate);
             socket.off('stockUpdate', handlePriceUpdate);
         };
     }, []);

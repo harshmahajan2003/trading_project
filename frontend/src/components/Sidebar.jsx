@@ -2,33 +2,13 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, TrendingUp, Wallet, History, LogOut, ShieldCheck, PlusCircle, Rocket } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { walletService } from '../services/api';
-import { socket } from '../services/socket';
+import { useWallet } from '../context/WalletContext';
 import { cn } from '../utils/cn';
 
 const Sidebar = ({ isOpen, onClose }) => {
     const location = useLocation();
     const { logout, user } = useAuth();
-    const [balance, setBalance] = useState(0);
-
-    useEffect(() => {
-        const fetchBalance = async () => {
-            try {
-                const data = await walletService.getBalance();
-                setBalance(data.balance);
-            } catch (err) {
-                console.error("Sidebar wallet error:", err);
-            }
-        };
-        fetchBalance();
-
-        const handleUpdate = () => {
-            fetchBalance();
-        };
-
-        socket.on('walletUpdate', handleUpdate);
-        return () => socket.off('walletUpdate', handleUpdate);
-    }, []);
+    const { balance } = useWallet();
 
     // Close mobile drawer when route changes
     useEffect(() => {

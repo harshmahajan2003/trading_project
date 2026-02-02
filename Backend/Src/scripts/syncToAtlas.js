@@ -2,16 +2,15 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 
 // Collections to sync based on Compass screenshot
+// We skip history-heavy collections (ticks, candles) for Atlas Free Tier stability
 const collections = [
     { name: "stocks", modelPath: "../models/Stock" },
     { name: "ipos", modelPath: "../models/IPO" },
     { name: "ipoapplications", modelPath: "../models/IPOApplication" },
-    { name: "candles", modelPath: "../models/candle" },
     { name: "notifications", modelPath: "../models/Notification" },
     { name: "holdings", modelPath: "../models/Holding" },
     { name: "orders", modelPath: "../models/Order" },
-    { name: "transactions", modelPath: "../models/Transaction" },
-    { name: "ticks", modelPath: "../models/Tick" }
+    { name: "transactions", modelPath: "../models/Transaction" }
 ];
 
 const syncData = async () => {
@@ -32,12 +31,18 @@ const syncData = async () => {
 
         const dataToMigrate = {};
         for (const col of collections) {
-            const schema = require(col.modelPath).schema;
-            const modelName = require(col.modelPath).modelName;
-            const model = localConn.model(modelName, schema);
+            try {
+                const schema = require(col.modelPath).schema;
+                const modelName = require(col.modelPath).modelName;
+                const model = localConn.model(modelName, schema);
 
-            dataToMigrate[col.name] = await model.find({});
-            console.log(`📦 Fetched ${dataToMigrate[col.name].length} items from ${col.name}`);
+                const docs = await model.find({});
+                dataToMigrate[col.name] = docs.map(d => d.toObject());
+                console.log(`📦 Fetched ${dataToMigrate[col.name].length} items from ${col.name}`);
+            } catch (fetchErr) {
+                console.error(`❌ Failed to fetch ${col.name}:`, fetchErr.message);
+                dataToMigrate[col.name] = [];
+            }
         }
         await localConn.close();
 
@@ -47,17 +52,26 @@ const syncData = async () => {
         console.log("✅ Connected to Atlas DB");
 
         for (const col of collections) {
-            const schema = require(col.modelPath).schema;
-            const modelName = require(col.modelPath).modelName;
-            const model = atlasConn.model(modelName, schema);
+            try {
+                const schema = require(col.modelPath).schema;
+                const modelName = require(col.modelPath).modelName;
+                const model = atlasConn.model(modelName, schema);
 
-            // Clear Atlas collection first to avoid duplicates
-            await model.deleteMany({});
-            console.log(`🧹 Cleared Atlas ${col.name}`);
+                // Clear Atlas collection first to avoid duplicates
+                await model.deleteMany({});
+                console.log(`🧹 Cleared Atlas ${col.name}`);
 
-            if (dataToMigrate[col.name].length > 0) {
-                await model.insertMany(dataToMigrate[col.name]);
-                console.log(`🚀 Mirrored ${dataToMigrate[col.name].length} items to Atlas ${col.name}`);
+                if (dataToMigrate[col.name].length > 0) {
+                    await model.insertMany(dataToMigrate[col.name], { ordered: false });
+                    console.log(`🚀 Mirrored ${dataToMigrate[col.name].length} items to Atlas ${col.name}`);
+                }
+            } catch (pushErr) {
+                console.error(`❌ Failed to push ${col.name}:`, pushErr.message);
+                if (pushErr.errors) {
+                    Object.keys(pushErr.errors).forEach(key => {
+                        console.error(`  - Field "${key}": ${pushErr.errors[key].message}`);
+                    });
+                }
             }
         }
 

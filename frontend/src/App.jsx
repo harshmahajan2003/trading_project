@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { WalletProvider } from './context/WalletContext';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import Login from './pages/Login';
