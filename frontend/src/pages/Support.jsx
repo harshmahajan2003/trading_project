@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, MessageSquare, Send, Loader2, CheckCircle2, Phone, MapPin } from 'lucide-react';
-import axios from 'axios';
+import api from '../services/api';
 import { cn } from '../utils/cn';
 
 const Support = () => {
@@ -14,10 +14,7 @@ const Support = () => {
         setLoading(true);
         setError('');
         try {
-            const token = localStorage.getItem('token');
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/support`, formData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.post('/support', formData);
             setSuccess(true);
             setFormData({ subject: '', message: '' });
         } catch (err) {
