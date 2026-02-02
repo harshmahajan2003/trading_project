@@ -21,6 +21,7 @@ const sendEmail = async (to, subject, html) => {
 
     console.log(`📡 Attempting to send email via Resend to ${to}...`);
 
+    // Resend free tier sends only to verified emails/your own account
     const { data, error } = await resend.emails.send({
       from: 'Trade AI <onboarding@resend.dev>',
       to: [to],
@@ -33,7 +34,7 @@ const sendEmail = async (to, subject, html) => {
       return false;
     }
 
-    console.log(`✅ Email sent successfully! ID: ${data.id}`);
+    console.log(`✅ Email sent successfully! ID: ${data?.id}`);
     return true;
   } catch (err) {
     console.error("❌ Email sending failed ERROR:", err.message);
