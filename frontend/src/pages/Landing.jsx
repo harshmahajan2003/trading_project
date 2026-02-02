@@ -28,7 +28,12 @@ const Landing = () => {
                 <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-400 uppercase tracking-widest">
                     <a href="#features" className="hover:text-white transition-colors">Features</a>
                     <a href="#security" className="hover:text-white transition-colors">Security</a>
-                    <a href="#ipo" className="hover:text-white transition-colors">IPO Hub</a>
+                    <button
+                        onClick={() => navigate(user ? "/ipo" : "/login")}
+                        className="hover:text-white transition-colors uppercase"
+                    >
+                        IPO Hub
+                    </button>
                 </div>
                 <div className="flex items-center gap-4">
                     {user ? (
@@ -137,14 +142,14 @@ const Landing = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {[
                         { icon: BarChart3, title: 'Real-time Analytics', desc: 'Predictive market analysis powered by deep learning models.', color: 'text-indigo-400', bg: 'bg-indigo-400/10' },
-                        { icon: ShieldCheck, title: 'Ironclad Security', desc: 'State-of-the-art encryption and dual-factor session protection.', color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
+                        { id: 'security', icon: ShieldCheck, title: 'Ironclad Security', desc: 'State-of-the-art encryption and dual-factor session protection.', color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
                         { icon: Globe, title: 'Global Access', desc: 'Trade from anywhere, anytime with our global edge network.', color: 'text-purple-400', bg: 'bg-purple-400/10' },
                         { icon: Rocket, title: 'Premium IPOs', desc: 'Exclusive early access to high-potential company listings.', color: 'text-pink-400', bg: 'bg-pink-400/10' },
                         { icon: Zap, title: 'Instant Fundings', desc: 'Deposit and withdraw funds instantly via Stripe integration.', color: 'text-orange-400', bg: 'bg-orange-400/10' },
                         { icon: TrendingUp, title: 'Advanced Trading', desc: 'Multi-chart layouts and rapid-order execution system.', color: 'text-blue-400', bg: 'bg-blue-400/10' },
                     ].map((feature, i) => (
                         <div key={i} className="bg-slate-900/40 border border-slate-800 p-8 rounded-[2.5rem] hover:border-indigo-500/30 transition-all duration-300 group">
-                            <div className={`${feature.bg} ${feature.color} w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                            <div id={feature.id} className={`${feature.bg} ${feature.color} w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                                 <feature.icon className="w-8 h-8" />
                             </div>
                             <h4 className="text-xl font-black text-white mb-4 uppercase tracking-tight">{feature.title}</h4>
