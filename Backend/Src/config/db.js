@@ -12,7 +12,7 @@ const connectDB = async () => {
     console.log("MongoDB connected:", mongoose.connection.name);
   } catch (err) {
     console.error("MongoDB connection failed:", err.message);
-    process.exit(1);
+    // Don't exit process, allow server to stay alive for Render health check
   }
 };
 
