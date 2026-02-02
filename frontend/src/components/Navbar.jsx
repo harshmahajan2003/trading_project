@@ -38,7 +38,7 @@ const Navbar = () => {
 
     return (
         <header className="h-16 border-b border-slate-800 bg-[#0a0a0a]/80 backdrop-blur-md sticky top-0 z-[100] px-8 flex items-center justify-between">
-            <div className="relative w-96">
+            <div className="relative w-96 hidden md:block">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                 <input
                     type="text"
@@ -97,8 +97,8 @@ const Navbar = () => {
                     )}
                 </div>
 
-                <div className="flex items-center gap-3 pl-6 border-l border-slate-800">
-                    <div className="text-right">
+                <div className="flex items-center gap-3 pl-0 md:pl-6 border-l-0 md:border-l border-slate-800">
+                    <div className="text-right hidden sm:block">
                         <p className="text-sm font-medium text-slate-100">{user?.name}</p>
                         <p className="text-xs text-slate-500 capitalize">{user?.email}</p>
                     </div>

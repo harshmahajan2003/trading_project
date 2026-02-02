@@ -189,8 +189,63 @@ const Portfolio = () => {
                             ))}
                         </div>
 
-                        {/* Table */}
-                        <div className="overflow-x-auto">
+                        {/* Mobile Card View */}
+                        <div className="block md:hidden border-t border-slate-800">
+                            {holdings.length > 0 ? holdings.map((h, i) => {
+                                const symbol = h.symbol || h.stockSymbol || '';
+                                const liveData = livePrices[symbol] || {};
+                                const ltp = (liveData && typeof liveData === 'object' ? liveData.price : liveData) || h.currentPrice || h.averagePrice || h.avgPrice || 0;
+                                const cur = h.quantity * ltp;
+                                const inv = h.quantity * (h.avgPrice || h.averagePrice || 0);
+                                const pnl = cur - inv;
+                                const pct = inv > 0 ? (pnl / inv) * 100 : 0;
+                                return (
+                                    <div key={i} className="p-4 border-b border-slate-800/50 active:bg-slate-800/50 transition-colors" onClick={() => navigate(`/market/${(symbol || '').toUpperCase()}`)}>
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center font-black text-white shadow-lg shadow-indigo-600/20 text-xs text-center p-1">
+                                                    {(symbol || 'S')[0]}
+                                                </div>
+                                                <div>
+                                                    <p className="font-black text-white uppercase text-sm tracking-tight">{symbol}</p>
+                                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none mt-1">{h.quantity} Shares • Equity</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-sm font-black text-white">₹{ltp.toLocaleString('en-IN')}</p>
+                                                <p className={cn("text-[10px] font-black uppercase tracking-widest mt-1", pnl >= 0 ? "text-emerald-500" : "text-rose-500")}>
+                                                    {pnl >= 0 ? '+' : ''}{pct.toFixed(2)}%
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between pt-4 border-t border-slate-800/30">
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); setTradeModal({ show: true, symbol: symbol, side: 'BUY', price: ltp }); }}
+                                                    className="px-4 py-2 bg-emerald-500/10 text-emerald-500 rounded-xl hover:bg-emerald-500 hover:text-white transition-all text-[10px] font-black uppercase border border-emerald-500/20"
+                                                >
+                                                    Buy
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); setTradeModal({ show: true, symbol: symbol, side: 'SELL', price: ltp }); }}
+                                                    className="px-4 py-2 bg-rose-500/10 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all text-[10px] font-black uppercase border border-rose-500/20"
+                                                >
+                                                    Sell
+                                                </button>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Position Value</p>
+                                                <p className="font-black text-white text-base">₹{cur.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            }) : (
+                                <div className="p-12 text-center text-slate-600 font-black uppercase tracking-[0.2em] text-[10px]">No active positions found</div>
+                            )}
+                        </div>
+
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead className="bg-slate-950/50 text-[10px] font-black text-slate-500 uppercase tracking-widest">
                                     <tr>
