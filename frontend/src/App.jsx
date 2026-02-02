@@ -17,6 +17,7 @@ import AdminLayout from './components/AdminLayout';
 import AuthSuccess from './pages/AuthSuccess';
 import AddFunds from './pages/AddFunds';
 import IPOHub from './pages/IPOHub';
+import Support from './pages/Support';
 
 import Landing from './pages/Landing';
 
@@ -115,6 +116,11 @@ function App() {
             <Route path="/ipo" element={
               <ProtectedLayout>
                 <IPOHub />
+              </ProtectedLayout>
+            } />
+            <Route path="/support" element={
+              <ProtectedLayout>
+                <Support />
               </ProtectedLayout>
             } />
             <Route element={<AdminRoute />}>

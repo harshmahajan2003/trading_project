@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, TrendingUp, Wallet, History, LogOut, ShieldCheck, PlusCircle, Rocket } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, Wallet, History, LogOut, ShieldCheck, PlusCircle, Rocket, LifeBuoy } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useWallet } from '../context/WalletContext';
 import { cn } from '../utils/cn';
@@ -21,6 +21,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { icon: Wallet, label: 'Portfolio', path: '/portfolio' },
         { icon: Rocket, label: 'IPO Hub', path: '/ipo' },
         { icon: History, label: 'Activity', path: '/activity' },
+        { icon: LifeBuoy, label: 'Support', path: '/support' },
     ];
 
     if (user?.role === 'admin') {

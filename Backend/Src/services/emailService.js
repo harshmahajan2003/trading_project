@@ -136,10 +136,35 @@ const sendTradeEmail = async (user, order) => {
   return await sendEmail(user.email, subject, html);
 };
 
+const sendSupportEmail = async (user, subject, message) => {
+  const adminEmail = "trading.ai2006@gmail.com";
+  const emailSubject = `Support Ticket: ${subject}`;
+  const html = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+      <h2 style="color: #4f46e5;">New Support Query</h2>
+      <p>Bhai, ek naya support ticket aaya hai!</p>
+      
+      <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p><strong>From:</strong> ${user.name} (${user.email})</p>
+        <p><strong>Subject:</strong> ${subject}</p>
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 15px 0;">
+        <p><strong>Message:</strong></p>
+        <p style="white-space: pre-wrap; color: #334155;">${message}</p>
+      </div>
+
+      <p style="font-size: 12px; color: #94a3b8;">User ID: ${user._id}</p>
+      <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+      <p style="font-size: 12px; color: #94a3b8;">This query was sent via the TRADE.AI Support Portal.</p>
+    </div>
+  `;
+  return await sendEmail(adminEmail, emailSubject, html);
+};
+
 module.exports = {
   sendAllotmentEmail,
   sendIPOApplicationEmail,
   sendIPORejectionEmail,
   sendDepositEmail,
-  sendTradeEmail
+  sendTradeEmail,
+  sendSupportEmail
 };
