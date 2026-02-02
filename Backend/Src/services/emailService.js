@@ -1,50 +1,38 @@
-const axios = require("axios");
+const nodemailer = require("nodemailer");
 
 /**
  * EMAIL SERVICE
- * Handles sending transactional emails to users using Resend API (Direct Https)
+ * Handles sending transactional emails using Nodemailer (Gmail SMTP)
  */
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 const sendEmail = async (to, subject, html) => {
   try {
-    const apiKey = process.env.RESEND_API;
-
-    if (!apiKey) {
-      console.error("❌ Email Service: RESEND_API missing in environment");
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error("❌ Email Service: Credentials missing in environment");
       return false;
     }
 
-    if (!to) {
-      console.error("❌ Email Service: Recipient address (to) is missing");
-      return false;
-    }
+    const mailOptions = {
+      from: `"Trade AI" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html,
+    };
 
-    console.log(`📡 Attempting to send email via Resend API to ${to}...`);
-
-    const response = await axios.post('https://api.resend.com/emails', {
-      from: 'Trade AI <onboarding@resend.dev>',
-      to: [to],
-      subject: subject,
-      html: html,
-    }, {
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (response.status === 200 || response.status === 201) {
-      console.log(`✅ Email sent successfully! ID: ${response.data.id}`);
-      return true;
-    } else {
-      console.error("❌ Resend API failed with status:", response.status);
-      return false;
-    }
+    console.log(`📡 Sending Gmail via Nodemailer to ${to}...`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log("✅ Email sent:", info.messageId);
+    return true;
   } catch (err) {
-    console.error("❌ Email sending failed ERROR:", err.response?.data?.message || err.message);
-    if (err.response?.data) {
-      console.error("Resend Error Detail:", JSON.stringify(err.response.data));
-    }
+    console.error("❌ Email sending failed:", err.message);
     return false;
   }
 };
