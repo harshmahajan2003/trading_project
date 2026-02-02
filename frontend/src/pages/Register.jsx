@@ -62,7 +62,11 @@ const Register = () => {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <button
                             type="button"
-                            onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'}
+                            onClick={() => {
+                                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                                const baseUrl = apiUrl.replace(/\/api$/, '');
+                                window.location.href = `${baseUrl}/api/auth/google`;
+                            }}
                             className="w-full bg-white text-black font-bold py-3.5 rounded-xl transition-all hover:bg-slate-200 flex items-center justify-center gap-3 shadow-xl shadow-white/5"
                         >
                             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
