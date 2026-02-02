@@ -112,8 +112,8 @@ const IPOHub = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {ipos.length > 0 ? (
-                    ipos.map((ipo) => (
+                {ipos.filter(ipo => ipo.status !== 'LISTED').length > 0 ? (
+                    ipos.filter(ipo => ipo.status !== 'LISTED').map((ipo) => (
                         <div key={ipo._id} className="group bg-slate-900/40 border border-slate-800 hover:border-indigo-500/30 rounded-[2.5rem] p-8 transition-all duration-500 backdrop-blur-sm relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-8">
                                 <span className={cn(
