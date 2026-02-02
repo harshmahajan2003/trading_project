@@ -44,7 +44,10 @@ const Sidebar = ({ isOpen, onClose }) => {
                 isOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 <div className="flex items-center justify-between lg:block">
-                    <Link to="/" className="p-6 block hover:opacity-80 transition-opacity">
+                    <Link to="/" className="p-6 flex items-center gap-2 hover:opacity-80 transition-opacity">
+                        <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center overflow-hidden p-1 shadow-lg shadow-indigo-500/10">
+                            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                        </div>
                         <h1 className="text-2xl font-black bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent tracking-tighter">
                             TRADE.AI
                         </h1>

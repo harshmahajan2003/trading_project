@@ -43,6 +43,9 @@ const Login = () => {
             <div className="w-full max-w-md">
                 <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 shadow-2xl relative z-10">
                     <div className="text-center mb-10">
+                        <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center overflow-hidden p-2 mx-auto mb-6 shadow-2xl shadow-indigo-500/10 border border-slate-800">
+                            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                        </div>
                         <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
                         <p className="text-slate-400">Enter your credentials to access your account</p>
                     </div>

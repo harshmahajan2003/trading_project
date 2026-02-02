@@ -18,8 +18,8 @@ const Landing = () => {
             {/* Navbar */}
             <nav className="relative z-10 flex items-center justify-between px-8 py-6 max-w-7xl mx-auto">
                 <div className="flex items-center gap-2 group cursor-pointer">
-                    <div className="w-8 h-8 md:w-10 md:h-10 bg-indigo-600 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20 group-hover:scale-110 transition-transform">
-                        <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                    <div className="w-8 h-8 md:w-10 md:h-10 bg-slate-900 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20 group-hover:scale-110 transition-transform overflow-hidden p-1">
+                        <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
                     </div>
                     <span className="text-xl md:text-2xl font-black bg-gradient-to-r from-white to-slate-500 bg-clip-text text-transparent tracking-tighter">
                         TRADE.AI
@@ -164,8 +164,8 @@ const Landing = () => {
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
                     <div>
                         <div className="flex items-center gap-2 mb-6">
-                            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                                <TrendingUp className="w-5 h-5 text-white" />
+                            <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center overflow-hidden p-1">
+                                <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
                             </div>
                             <span className="text-xl font-black text-white tracking-widest uppercase">TRADE.AI</span>
                         </div>
