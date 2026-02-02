@@ -5,6 +5,8 @@ const Holding = require("../models/Holding");
 const Transaction = require("../models/Transaction");
 const Candle = require("../models/candle");
 const Stock = require("../models/Stock");
+const User = require("../models/User");
+const emailService = require("../services/emailService");
 const { getIO } = require("../socket");
 
 /**
@@ -116,6 +118,21 @@ exports.buyStock = async (req, res) => {
     const io = getIO();
     io.emit("walletUpdate", { userId });
 
+    // Send Email Notification
+    const user = await User.findById(userId);
+    if (user) {
+      emailService.sendTradeEmail(user, {
+        symbol: symbol.toUpperCase(),
+        quantity,
+        price: stock.price,
+        side: "BUY",
+        type: "MARKET",
+        status: "SUCCESS"
+      }).catch(err => {
+        console.error(`❌ Trade Email Error (BUY):`, err.message);
+      });
+    }
+
     res.status(201).json({ message: "Buy successful" });
   } catch (err) {
     console.error("🔥 BUY ERROR:", err);
@@ -195,6 +212,21 @@ exports.sellStock = async (req, res) => {
 
     const io = getIO();
     io.emit("walletUpdate", { userId });
+
+    // Send Email Notification
+    const user = await User.findById(userId);
+    if (user) {
+      emailService.sendTradeEmail(user, {
+        symbol: symbol.toUpperCase(),
+        quantity,
+        price,
+        side: "SELL",
+        type: "MARKET",
+        status: "SUCCESS"
+      }).catch(err => {
+        console.error(`❌ Trade Email Error (SELL):`, err.message);
+      });
+    }
 
     res.status(201).json({ message: "Sell successful" });
   } catch (err) {

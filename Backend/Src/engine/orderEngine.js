@@ -2,6 +2,8 @@ const Order = require("../models/Order");
 const Wallet = require("../models/Wallet");
 const Holding = require("../models/Holding");
 const Transaction = require("../models/Transaction");
+const User = require("../models/User");
+const emailService = require("../services/emailService");
 
 /**
  * PENDING ORDER MATCHER & RISK MANAGER
@@ -64,6 +66,21 @@ module.exports = async function processOrders(io, symbol, currentPrice) {
             });
 
             io.emit("walletUpdate", { userId: order.user });
+
+            // Send Email Notification
+            const user = await User.findById(order.user);
+            if (user) {
+                emailService.sendTradeEmail(user, {
+                    symbol,
+                    quantity: order.quantity,
+                    price: currentPrice,
+                    side: "BUY",
+                    type: "LIMIT",
+                    status: "SUCCESS"
+                }).catch(err => {
+                    console.error(`❌ Limit Order Email Error:`, err.message);
+                });
+            }
         }
 
         // 2. RISK MANAGEMENT (SL / TARGET)
@@ -113,6 +130,21 @@ module.exports = async function processOrders(io, symbol, currentPrice) {
             await holding.deleteOne();
 
             io.emit("walletUpdate", { userId: holding.user });
+
+            // Send Email Notification
+            const user = await User.findById(holding.user);
+            if (user) {
+                emailService.sendTradeEmail(user, {
+                    symbol,
+                    quantity: holding.quantity,
+                    price: currentPrice,
+                    side: "SELL",
+                    type: type, // STOPLOSS or TARGET
+                    status: "AUTO"
+                }).catch(err => {
+                    console.error(`❌ Risk Hit Email Error (${type}):`, err.message);
+                });
+            }
         }
 
     } catch (err) {

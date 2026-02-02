@@ -1,6 +1,8 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const Wallet = require("../models/Wallet");
 const Transaction = require("../models/Transaction");
+const User = require("../models/User");
+const emailService = require("../services/emailService");
 const { getIO } = require("../socket");
 
 // CREATE CHECKOUT SESSION
@@ -96,6 +98,14 @@ exports.verifySession = async (req, res) => {
                 const io = getIO();
                 io.emit("walletUpdate", { userId });
 
+                // Send Email Notification
+                const user = await User.findById(userId);
+                if (user) {
+                    emailService.sendDepositEmail(user, amount).catch(err => {
+                        console.error(`❌ Deposit Email Error:`, err.message);
+                    });
+                }
+
                 return res.json({ message: "Payment verified and credited", balance: wallet.balance });
             }
         }
@@ -150,6 +160,14 @@ exports.handleWebhook = async (req, res) => {
 
                 const io = getIO();
                 io.emit("walletUpdate", { userId });
+
+                // Send Email Notification
+                const user = await User.findById(userId);
+                if (user) {
+                    emailService.sendDepositEmail(user, amount).catch(err => {
+                        console.error(`❌ Deposit Webhook Email Error:`, err.message);
+                    });
+                }
 
                 console.log(`✅ WALLET CREDITED: User ${userId} received ₹${amount}`);
             }

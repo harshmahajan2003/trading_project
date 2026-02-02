@@ -103,6 +103,14 @@ const applyIPO = async (req, res) => {
     const io = getIO();
     if (io) io.emit("walletUpdate", { userId });
 
+    // Send Email Notification
+    const user = await require("../models/User").findById(userId);
+    if (user) {
+      emailService.sendIPOApplicationEmail(user, ipo, lots, amount).catch(err => {
+        console.error(`❌ IPO Application Email Error:`, err.message);
+      });
+    }
+
     res.status(201).json(application);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -222,6 +230,11 @@ const runBulkAllotment = async (req, res) => {
           title: "IPO Allotment Result",
           message: `You were not allotted shares for ${ipo.symbol}. ₹${app.amount.toLocaleString()} has been refunded.`,
           type: "IPO_UPDATE"
+        });
+
+        // 3. Send Rejection Email (Asynchronous)
+        emailService.sendIPORejectionEmail(app.user, ipo, app.amount).catch(err => {
+          console.error(`❌ IPO Rejection Email Error for ${app.user.email}:`, err.message);
         });
       }
       await app.save();
