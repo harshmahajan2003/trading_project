@@ -73,6 +73,10 @@ export const tradeService = {
         const res = await api.get('/transactions');
         return res.data;
     },
+    getMarketPulse: async () => {
+        const res = await api.get('/transactions/pulse');
+        return res.data;
+    },
     getOrders: async () => {
         const res = await api.get('/orders');
         return res.data;

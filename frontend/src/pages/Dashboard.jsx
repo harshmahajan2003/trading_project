@@ -28,7 +28,7 @@ const Dashboard = () => {
         try {
             const [holdingsData, transData] = await Promise.all([
                 tradeService.getHoldings(),
-                tradeService.getTransactions()
+                tradeService.getMarketPulse()
             ]);
             setHoldings(Array.isArray(holdingsData) ? holdingsData : []);
             setTransactions(Array.isArray(transData) ? transData : []);
@@ -458,7 +458,9 @@ const Dashboard = () => {
                                             </div>
                                             <div>
                                                 <p className="text-sm font-black text-white uppercase tracking-tight">{displaySymbol}</p>
-                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{displaySide} {displayQty ? `• ${displayQty} Shares` : ''}</p>
+                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                                    {t.user?.name || 'Trader'} • {displaySide} {displayQty ? `• ${displayQty} Shares` : ''}
+                                                </p>
                                             </div>
                                         </div>
                                         <div className="text-right">
