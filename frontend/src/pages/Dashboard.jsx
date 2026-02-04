@@ -456,36 +456,45 @@ const Dashboard = () => {
                     <div className="bg-slate-900/40 border border-slate-800 rounded-3xl md:rounded-[2.5rem] p-6 md:p-8 backdrop-blur-sm">
                         <h3 className="text-xl font-black text-white uppercase tracking-widest mb-6 md:mb-8">Pulse</h3>
                         <div className="space-y-6">
-                            {transactions.length > 0 ? transactions.slice(0, 5).map((t, i) => {
-                                // Fallback logic for existing transactions missing metadata
-                                const displaySymbol = t.symbol || (t.description?.split(' ')[1]) || 'CASH';
-                                const displaySide = t.side || (t.type === 'DEBIT' ? 'BUY' : 'SELL');
-                                const displayQty = t.quantity || '';
+                            {transactions.filter(t => t.symbol && t.symbol !== 'CASH').length > 0 ? transactions
+                                .filter(t => t.symbol && t.symbol !== 'CASH')
+                                .slice(0, 5)
+                                .map((t, i) => {
+                                    const displaySymbol = t.symbol;
+                                    const displaySide = t.side || (t.type === 'DEBIT' ? 'BUY' : 'SELL');
+                                    const displayQty = t.quantity || '';
 
-                                return (
-                                    <div key={i} className="flex items-center justify-between group">
-                                        <div className="flex items-center gap-4">
-                                            <div className={`p-3 rounded-2xl ${displaySide === 'BUY' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}>
-                                                <Zap className="w-4 h-4" />
+                                    return (
+                                        <div
+                                            key={i}
+                                            onClick={() => navigate(`/market/${displaySymbol}`)}
+                                            className="flex items-center justify-between group cursor-pointer hover:bg-slate-800/30 p-2 -mx-2 rounded-xl transition-all"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className={`p-3 rounded-2xl ${displaySide === 'BUY' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'} group-hover:scale-110 transition-transform`}>
+                                                    <Zap className="w-4 h-4" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-black text-white uppercase tracking-tight flex items-center gap-2">
+                                                        {displaySymbol}
+                                                        <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-indigo-500" />
+                                                    </p>
+                                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                                        {t.user?.name || 'Trader'} • {displaySide} {displayQty ? `• ${displayQty} Shares` : ''}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="text-sm font-black text-white uppercase tracking-tight">{displaySymbol}</p>
-                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                                                    {t.user?.name || 'Trader'} • {displaySide} {displayQty ? `• ${displayQty} Shares` : ''}
-                                                </p>
+                                            <div className="text-right">
+                                                <p className="text-sm font-black text-white font-mono">₹{t.amount?.toLocaleString()}</p>
+                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{t.createdAt ? new Date(t.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'}</p>
                                             </div>
                                         </div>
-                                        <div className="text-right">
-                                            <p className="text-sm font-black text-white font-mono">₹{t.amount?.toLocaleString()}</p>
-                                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{t.createdAt ? new Date(t.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'}</p>
-                                        </div>
-                                    </div>
-                                );
-                            }) : (
+                                    );
+                                }) : (
                                 <div className="text-center py-10">
                                     <Info className="w-10 h-10 text-slate-700 mx-auto mb-4" />
-                                    <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">No recent activity</p>
-                                    <p className="text-slate-600 text-[10px] mt-1">Your latest trades will appear here</p>
+                                    <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">No recent market activity</p>
+                                    <p className="text-slate-600 text-[10px] mt-1">Global trades will appear here</p>
                                 </div>
                             )}
                         </div>
