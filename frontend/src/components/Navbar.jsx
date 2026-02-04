@@ -1,29 +1,66 @@
-import { useState, useEffect } from 'react';
-import { Bell, User, Search, Clock, CheckCircle2, XCircle, Rocket } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Bell, User, Search, Clock, CheckCircle2, XCircle, Rocket, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { notificationService } from '../services/api';
+import { notificationService, stockService } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '../utils/cn';
 
 const Navbar = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [notifications, setNotifications] = useState([]);
     const [showNotifications, setShowNotifications] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
 
+    // Search state
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [allStocks, setAllStocks] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const searchRef = useRef(null);
+
     useEffect(() => {
-        const fetchNotifications = async () => {
+        const fetchInitialData = async () => {
             try {
-                const data = await notificationService.getNotifications();
-                const notificationsData = Array.isArray(data) ? data : [];
-                setNotifications(notificationsData);
-                setUnreadCount(notificationsData.filter(n => !n.isRead).length);
+                const [notifsData, stocksData] = await Promise.all([
+                    notificationService.getNotifications(),
+                    stockService.getStocks()
+                ]);
+                const actualNotifs = Array.isArray(notifsData) ? notifsData : [];
+                setNotifications(actualNotifs);
+                setUnreadCount(actualNotifs.filter(n => !n.isRead).length);
+                setAllStocks(Array.isArray(stocksData) ? stocksData : []);
             } catch (err) {
-                console.error("Navbar notification error:", err);
+                console.error("Navbar data fetch error:", err);
             }
         };
-        fetchNotifications();
-        const interval = setInterval(fetchNotifications, 30000); // Check every 30s
+        fetchInitialData();
+        const interval = setInterval(fetchInitialData, 30000);
         return () => clearInterval(interval);
+    }, []);
+
+    // Handle search filtering
+    useEffect(() => {
+        if (!searchQuery.trim()) {
+            setSearchResults([]);
+            return;
+        }
+        const filtered = allStocks.filter(s =>
+            s.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            s.name.toLowerCase().includes(searchQuery.toLowerCase())
+        ).slice(0, 5);
+        setSearchResults(filtered);
+    }, [searchQuery, allStocks]);
+
+    // Close search dropdown on click outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (searchRef.current && !searchRef.current.contains(e.target)) {
+                setSearchResults([]);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     const handleMarkRead = async () => {
@@ -38,13 +75,51 @@ const Navbar = () => {
 
     return (
         <header className="h-16 border-b border-slate-800 bg-[#0a0a0a]/80 backdrop-blur-md sticky top-0 z-[100] px-8 flex items-center justify-between">
-            <div className="relative w-96 hidden md:block">
+            <div className="relative w-96 hidden md:block" ref={searchRef}>
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                 <input
                     type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search stocks, indices..."
-                    className="w-full bg-slate-900 border border-slate-700 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium text-slate-100"
                 />
+
+                {/* Search Results Dropdown */}
+                {searchResults.length > 0 && (
+                    <div className="absolute top-full left-0 mt-2 w-full bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-2 animate-in fade-in slide-in-from-top-2 duration-200 z-[101]">
+                        {searchResults.map((stock) => (
+                            <button
+                                key={stock.symbol}
+                                onClick={() => {
+                                    navigate(`/market/${stock.symbol}`);
+                                    setSearchQuery('');
+                                    setSearchResults([]);
+                                }}
+                                className="w-full flex items-center justify-between p-3 hover:bg-slate-800/50 rounded-xl transition-all group"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500 font-bold text-xs uppercase">
+                                        {stock.symbol[0]}
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="text-xs font-bold text-white uppercase">{stock.symbol}</p>
+                                        <p className="text-[10px] text-slate-500 font-medium">{stock.name}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-xs font-bold text-white">₹{stock.price.toLocaleString('en-IN')}</p>
+                                    <p className={cn(
+                                        "text-[9px] font-bold uppercase",
+                                        stock.change >= 0 ? "text-emerald-500" : "text-rose-500"
+                                    )}>
+                                        {stock.change >= 0 ? '+' : ''}{stock.change}%
+                                    </p>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <div className="flex items-center gap-6">

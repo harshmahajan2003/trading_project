@@ -116,10 +116,17 @@ const StockDetail = () => {
         }
 
         const totalCost = numQty * executionPrice;
+
         if (tradeType === 'BUY' && totalCost > (wallet?.balance || 0)) {
-            setAlertModal({ show: true, title: 'Insufficient Funds', message: `Your balance (₹${(wallet?.balance || 0).toLocaleString()}) is not enough for this trade (₹${totalCost.toLocaleString()}).`, type: 'danger' });
+            setAlertModal({
+                show: true,
+                title: 'Insufficient Funds',
+                message: `Your balance (₹${(wallet?.balance || 0).toLocaleString('en-IN')}) is not enough for this trade (₹${totalCost.toLocaleString('en-IN')}).`,
+                type: 'danger'
+            });
             return;
         }
+
         if (tradeType === 'BUY') {
             if (stopLoss && Number(stopLoss) >= executionPrice) {
                 setAlertModal({ show: true, title: 'Invalid Stop Loss', message: 'Stop Loss must be lower than the buy price.', type: 'danger' });
@@ -334,13 +341,25 @@ const StockDetail = () => {
                             )}
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-400 ml-1">Quantity</label>
+                                <div className="flex justify-between items-center ml-1">
+                                    <label className="text-sm font-medium text-slate-400">Quantity</label>
+                                    <span className="text-[10px] font-black text-slate-600 uppercase">Max: 1,00,000</span>
+                                </div>
                                 <input
                                     type="number"
                                     min="1"
+                                    max="100000"
                                     value={quantity}
-                                    onChange={(e) => setQuantity(Number(e.target.value))}
-                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 px-4 text-white font-bold text-xl outline-none focus:ring-2 focus:ring-indigo-500/50"
+                                    onChange={(e) => {
+                                        const val = e.target.value === '' ? '' : Math.min(100000, Math.max(0, parseInt(e.target.value) || 0));
+                                        setQuantity(val);
+                                    }}
+                                    className={cn(
+                                        "w-full bg-slate-950 border rounded-xl py-3 px-4 text-white font-bold text-xl outline-none transition-all focus:ring-2 focus:ring-indigo-500/50",
+                                        (quantity * (orderType === 'LIMIT' ? Number(triggerPrice) : (stock?.price || 0))) > (wallet?.balance || 0) && tradeType === 'BUY'
+                                            ? "border-rose-500/50 bg-rose-500/5"
+                                            : "border-slate-800"
+                                    )}
                                 />
                             </div>
 
@@ -371,15 +390,30 @@ const StockDetail = () => {
                                 </div>
                             )}
 
-                            <div className="p-4 bg-slate-950/50 rounded-2xl border border-slate-800 border-dashed space-y-3">
+                            <div className={cn(
+                                "p-4 rounded-2xl border border-dashed space-y-3 transition-all",
+                                (quantity * (orderType === 'LIMIT' ? Number(triggerPrice) : (stock?.price || 0))) > (wallet?.balance || 0) && tradeType === 'BUY'
+                                    ? "bg-rose-500/5 border-rose-500/20"
+                                    : "bg-slate-950/50 border-slate-800"
+                            )}>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-slate-400">Estimate Cost</span>
-                                    <span className="text-white font-bold">₹{(quantity * (orderType === 'LIMIT' ? Number(triggerPrice) : (stock?.price || 0))).toLocaleString('en-IN')}</span>
+                                    <span className={cn(
+                                        "font-bold",
+                                        (quantity * (orderType === 'LIMIT' ? Number(triggerPrice) : (stock?.price || 0))) > (wallet?.balance || 0) && tradeType === 'BUY'
+                                            ? "text-rose-500"
+                                            : "text-white"
+                                    )}>
+                                        ₹{(quantity * (orderType === 'LIMIT' ? Number(triggerPrice) : (stock?.price || 0))).toLocaleString('en-IN')}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-slate-400">Available Balance</span>
                                     <span className="text-white font-bold">₹{(wallet?.balance || 0).toLocaleString('en-IN')}</span>
                                 </div>
+                                {(quantity * (orderType === 'LIMIT' ? Number(triggerPrice) : (stock?.price || 0))) > (wallet?.balance || 0) && tradeType === 'BUY' && (
+                                    <p className="text-[10px] text-rose-500 font-bold uppercase tracking-wider text-center animate-pulse">Insufficient Funds</p>
+                                )}
                             </div>
 
                             <button
