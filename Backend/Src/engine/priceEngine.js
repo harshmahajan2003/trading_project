@@ -1,8 +1,7 @@
 const Stock = require("../models/Stock");
 const Tick = require("../models/Tick");
 const processOrders = require("./orderEngine");
-const YahooFinance = require("yahoo-finance2").default;
-const yahooFinance = new YahooFinance();
+const axios = require("axios");
 
 // Helper to check if market is open (9:15 AM - 3:30 PM IST, Mon-Fri)
 const isMarketOpen = () => {
@@ -35,7 +34,7 @@ const isMarketOpen = () => {
 };
 
 const startPriceEngine = (io) => {
-  console.log("🚀 Price Engine Started (Hybrid Mode)");
+  console.log("🚀 Price Engine Started (Hybrid Mode via Axios)");
 
   setInterval(async () => {
     try {
@@ -48,19 +47,21 @@ const startPriceEngine = (io) => {
       if (marketOpen) {
         try {
           // Fetch live prices for Indian stocks (append .NS for National Stock Exchange)
-          const symbols = stocks.map(s => s.symbol.includes('.') ? s.symbol : `${s.symbol}.NS`);
-          const results = await yahooFinance.quote(symbols);
+          const symbols = stocks.map(s => s.symbol.includes('.') ? s.symbol : `${s.symbol}.NS`).join(',');
+          const response = await axios.get(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`);
 
-          results.forEach(quote => {
-            const cleanSymbol = quote.symbol.split('.')[0];
-            livePricesMap[cleanSymbol] = {
-              price: quote.regularMarketPrice,
-              change: quote.regularMarketChangePercent,
-              volume: quote.regularMarketVolume
-            };
-          });
+          if (response.data && response.data.quoteResponse && response.data.quoteResponse.result) {
+            response.data.quoteResponse.result.forEach(quote => {
+              const cleanSymbol = quote.symbol.split('.')[0];
+              livePricesMap[cleanSymbol] = {
+                price: quote.regularMarketPrice,
+                change: quote.regularMarketChangePercent,
+                volume: quote.regularMarketVolume
+              };
+            });
+          }
         } catch (apiErr) {
-          console.error("Yahoo Finance API Error (Falling back to simulation):", apiErr.message);
+          console.error("Yahoo Finance API Fetch Error (Falling back to simulation):", apiErr.message);
         }
       }
 
