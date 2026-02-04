@@ -1,7 +1,7 @@
 const Stock = require("../models/Stock");
 const Tick = require("../models/Tick");
 const processOrders = require("./orderEngine");
-const { YahooFinance } = require("yahoo-finance2");
+const YahooFinance = require("yahoo-finance2").default;
 const yahooFinance = new YahooFinance();
 
 // Helper to check if market is open (9:15 AM - 3:30 PM IST, Mon-Fri)
