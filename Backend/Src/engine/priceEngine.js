@@ -1,49 +1,100 @@
 const Stock = require("../models/Stock");
 const Tick = require("../models/Tick");
 const processOrders = require("./orderEngine");
+const yahooFinance = require("yahoo-finance2").default;
+
+// Helper to check if market is open (9:15 AM - 3:30 PM IST, Mon-Fri)
+const isMarketOpen = () => {
+  const now = new Date();
+
+  // Convert to IST
+  const istDate = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Kolkata',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false,
+    weekday: 'long'
+  }).formatToParts(now);
+
+  const getPart = (type) => istDate.find(p => p.type === type).value;
+
+  const hour = parseInt(getPart('hour'));
+  const minute = parseInt(getPart('minute'));
+  const day = getPart('weekday');
+
+  // Weekends
+  if (day === 'Saturday' || day === 'Sunday') return false;
+
+  const totalMinutes = hour * 60 + minute;
+  const openTime = 9 * 60 + 15; // 09:15
+  const closeTime = 15 * 60 + 30; // 15:30
+
+  return totalMinutes >= openTime && totalMinutes <= closeTime;
+};
 
 const startPriceEngine = (io) => {
-  console.log("🚀 Price Engine Started");
+  console.log("🚀 Price Engine Started (Hybrid Mode)");
 
-  // Update prices every 3 seconds for simulation
   setInterval(async () => {
     try {
       const stocks = await Stock.find();
-      if (stocks.length === 0) {
-        console.log("⚠️ Price Engine: No stocks found in database");
-        return;
-      }
+      if (stocks.length === 0) return;
 
-      // Heartbeat once every few cycles to verify engine is ticking
-      if (Math.random() > 0.9) {
-        console.log(`⚙️ Price Engine Ticking: Processing ${stocks.length} stocks`);
-        io.emit('engine_heartbeat', { stocksProcessed: stocks.length });
+      const marketOpen = isMarketOpen();
+      let livePricesMap = {};
+
+      if (marketOpen) {
+        try {
+          // Fetch live prices for Indian stocks (append .NS for National Stock Exchange)
+          const symbols = stocks.map(s => s.symbol.includes('.') ? s.symbol : `${s.symbol}.NS`);
+          const results = await yahooFinance.quote(symbols);
+
+          results.forEach(quote => {
+            const cleanSymbol = quote.symbol.split('.')[0];
+            livePricesMap[cleanSymbol] = {
+              price: quote.regularMarketPrice,
+              change: quote.regularMarketChangePercent,
+              volume: quote.regularMarketVolume
+            };
+          });
+        } catch (apiErr) {
+          console.error("Yahoo Finance API Error (Falling back to simulation):", apiErr.message);
+        }
       }
 
       for (const stock of stocks) {
-        // Random change between -1% and +1%
-        const changePercent = (Math.random() * 2 - 1) * 0.01;
-        const priceChange = stock.price * changePercent;
-        const newPrice = Number((stock.price + priceChange).toFixed(2));
+        let newPrice, displayChange, newVolume;
 
-        // Calculate total change percentage from original (or just current)
-        const displayChange = Number((changePercent * 100).toFixed(2));
+        const liveData = livePricesMap[stock.symbol];
 
-        const newVolume = (stock.volume || 0) + Math.floor(Math.random() * 5000) + 1000;
+        if (marketOpen && liveData) {
+          // Use Real Data
+          newPrice = Number(liveData.price.toFixed(2));
+          displayChange = Number(liveData.change.toFixed(2));
+          newVolume = liveData.volume;
+        } else {
+          // Fallback to Simulation (Random Walk)
+          const changePercent = (Math.random() * 2 - 1) * 0.01;
+          const priceChange = stock.price * changePercent;
+          newPrice = Number((stock.price + priceChange).toFixed(2));
+          displayChange = Number((changePercent * 100).toFixed(2));
+          newVolume = (stock.volume || 0) + Math.floor(Math.random() * 5000) + 1000;
+        }
 
         stock.price = newPrice;
         stock.changePercent = displayChange;
         stock.volume = newVolume;
         await stock.save();
 
-        // 1. Create a Tick for candlestick generation
+        // 1. Create a Tick
         await Tick.create({
           symbol: stock.symbol,
           price: newPrice,
           volume: newVolume
         });
 
-        // 2. Emit update via Socket.io
+        // 2. Emit update
         io.emit("stockUpdate", {
           symbol: stock.symbol,
           price: newPrice,
@@ -52,14 +103,18 @@ const startPriceEngine = (io) => {
           volume: newVolume
         });
 
-        // 3. Process Pending Orders / Risk Management
-        // We pass IO so it can notify users if their order was executed
+        // 3. Process Orders
         processOrders(io, stock.symbol, newPrice);
       }
+
+      if (Math.random() > 0.95) {
+        console.log(`⚙️ Engine Ticking: ${marketOpen ? 'LIVE' : 'SIMULATED'} Mode`);
+      }
+
     } catch (err) {
       console.error("Price Engine Error:", err.message);
     }
-  }, 3000);
+  }, 10000); // Increased interval to 10s to avoid API rate limits
 };
 
 module.exports = startPriceEngine;
