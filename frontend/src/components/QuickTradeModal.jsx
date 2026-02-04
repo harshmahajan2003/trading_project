@@ -173,14 +173,26 @@ const QuickTradeModal = ({ isOpen, onClose, symbol, initialSide = 'BUY', onTrade
 
                         {/* Quantity Input */}
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Quantity</label>
+                            <div className="flex justify-between items-center ml-1">
+                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Quantity</label>
+                                <span className="text-[9px] font-black text-slate-600 uppercase">Max: 1,00,000</span>
+                            </div>
                             <div className="relative">
                                 <input
                                     type="number"
                                     min="1"
+                                    max="100000"
                                     value={quantity}
-                                    onChange={(e) => setQuantity(e.target.value)}
-                                    className="w-full bg-slate-950 border border-slate-800 rounded-2xl py-4 px-6 text-white font-black text-2xl outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                                    onChange={(e) => {
+                                        const val = e.target.value === '' ? '' : Math.min(100000, Math.max(0, parseInt(e.target.value) || 0));
+                                        setQuantity(val);
+                                    }}
+                                    className={cn(
+                                        "w-full bg-slate-950 border rounded-2xl py-4 px-6 text-white font-black text-2xl outline-none transition-all focus:ring-2 focus:ring-indigo-500/50",
+                                        (Number(quantity) * (currentPrice || 0)) > (wallet?.balance || 0) && tradeType === 'BUY'
+                                            ? "border-rose-500/50 bg-rose-500/5"
+                                            : "border-slate-800"
+                                    )}
                                     placeholder="0"
                                 />
                             </div>
@@ -196,20 +208,32 @@ const QuickTradeModal = ({ isOpen, onClose, symbol, initialSide = 'BUY', onTrade
 
                         {/* Footer Summary & Button */}
                         <div className="space-y-4 pt-4 border-t border-slate-800">
-                            <div className="flex justify-between items-center px-2">
+                            <div className={cn(
+                                "flex justify-between items-center px-4 py-3 rounded-xl border border-dashed transition-all",
+                                (Number(quantity) * (currentPrice || 0)) > (wallet?.balance || 0) && tradeType === 'BUY'
+                                    ? "bg-rose-500/5 border-rose-500/20"
+                                    : "bg-transparent border-transparent"
+                            )}>
                                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Estimated Value</span>
-                                <span className="text-base font-black text-white">₹{totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                                <span className={cn(
+                                    "text-base font-black truncate max-w-[200px]",
+                                    (Number(quantity) * (currentPrice || 0)) > (wallet?.balance || 0) && tradeType === 'BUY'
+                                        ? "text-rose-500"
+                                        : "text-white"
+                                )}>
+                                    ₹{totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                </span>
                             </div>
 
                             <button
                                 onClick={handleTrade}
-                                disabled={loading}
+                                disabled={loading || ((Number(quantity) * (currentPrice || 0)) > (wallet?.balance || 0) && tradeType === 'BUY')}
                                 className={cn(
                                     "w-full py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-2xl",
                                     tradeType === 'BUY'
-                                        ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/20"
-                                        : "bg-rose-600 hover:bg-rose-700 text-white shadow-rose-600/20",
-                                    loading && "opacity-50 cursor-not-allowed"
+                                        ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-600/20"
+                                        : "bg-rose-600 hover:bg-rose-700 text-white shadow-xl shadow-rose-600/20",
+                                    (loading || ((Number(quantity) * (currentPrice || 0)) > (wallet?.balance || 0) && tradeType === 'BUY')) && "opacity-50 cursor-not-allowed grayscale"
                                 )}
                             >
                                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : `${tradeType} ${symbol}`}
