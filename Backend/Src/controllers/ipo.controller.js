@@ -12,23 +12,33 @@ const createIPO = async (req, res) => {
   try {
     const { companyName, symbol, price, lotSize, totalShares, status } = req.body;
 
-    if (!companyName || !symbol || !price || !lotSize || !totalShares)
-      return res.status(400).json({ message: "All IPO fields are required" });
-
     // Symbol validation
-    const upperSymbol = symbol.toUpperCase().trim();
+    const upperSymbol = String(symbol).toUpperCase().trim();
     if (upperSymbol.length < 2 || upperSymbol.length > 6)
       return res.status(400).json({ message: "Symbol must be between 2 and 6 characters" });
 
     // Numbers validation
-    if (price <= 0 || lotSize <= 0 || totalShares <= 0)
-      return res.status(400).json({ message: "Price, Lot Size, and Total Shares must be positive" });
+    const numPrice = Number(price);
+    const numLotSize = Number(lotSize);
+    const numTotalShares = Number(totalShares);
+
+    if (isNaN(numPrice) || numPrice <= 0)
+      return res.status(400).json({ message: "Price must be a positive number" });
+
+    if (!Number.isInteger(numLotSize) || numLotSize <= 0)
+      return res.status(400).json({ message: "Lot Size must be a positive integer" });
+
+    if (!Number.isInteger(numTotalShares) || numTotalShares <= 0)
+      return res.status(400).json({ message: "Total Shares must be a positive integer" });
 
     const ipo = await IPO.create({
       ...req.body,
       symbol: upperSymbol,
       companyName: companyName.trim(),
-      availableShares: totalShares,
+      price: numPrice,
+      lotSize: numLotSize,
+      totalShares: numTotalShares,
+      availableShares: numTotalShares,
       status: status || "OPEN"
     });
     res.status(201).json(ipo);
@@ -54,8 +64,12 @@ const applyIPO = async (req, res) => {
 
   try {
     const numLots = Number(lots);
-    if (isNaN(numLots) || numLots <= 0 || !Number.isInteger(numLots)) {
-      return res.status(400).json({ message: "Please enter a valid number of lots" });
+    if (!Number.isInteger(numLots) || numLots <= 0) {
+      return res.status(400).json({ message: "Please enter a valid number of lots (integer > 0)" });
+    }
+
+    if (numLots > 1000) {
+      return res.status(400).json({ message: "Maximum 1,000 lots allowed per application" });
     }
 
     const ipo = await IPO.findById(ipoId);

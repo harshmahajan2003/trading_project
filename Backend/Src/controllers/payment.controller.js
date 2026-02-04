@@ -20,8 +20,8 @@ exports.createCheckoutSession = async (req, res) => {
         }
 
         const numAmount = Number(amount);
-        if (isNaN(numAmount) || numAmount < 100) {
-            return res.status(400).json({ message: "Minimum deposit is ₹100" });
+        if (!Number.isInteger(numAmount) || numAmount < 100) {
+            return res.status(400).json({ message: "Minimum deposit is ₹100 and must be a whole number" });
         }
 
         if (numAmount > 1000000) {

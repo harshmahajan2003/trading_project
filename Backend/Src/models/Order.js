@@ -16,13 +16,19 @@ const orderSchema = new mongoose.Schema(
 
     quantity: {
       type: Number,
-      required: true,
-      min: 1,
+      required: [true, "Quantity is required"],
+      min: [1, "Quantity must be at least 1"],
+      max: [100000, "Maximum order quantity is 100,000"],
+      validate: {
+        validator: Number.isInteger,
+        message: "Quantity must be an integer"
+      }
     },
 
     price: {
       type: Number,
-      required: true,
+      required: [true, "Price is required"],
+      min: [0.01, "Price must be positive"],
     },
 
     side: {
@@ -37,6 +43,7 @@ const orderSchema = new mongoose.Schema(
     },
     triggerPrice: {
       type: Number,
+      min: [0, "Trigger price cannot be negative"],
     },
     stopLoss: {
       type: Number,

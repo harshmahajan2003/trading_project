@@ -98,10 +98,29 @@ const AddFunds = () => {
                                 type="number"
                                 placeholder="0.00"
                                 value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
-                                className="w-full bg-slate-950 border border-slate-800 rounded-2xl py-5 pl-12 pr-6 text-3xl font-black text-white outline-none focus:ring-2 focus:ring-indigo-600/50 transition-all placeholder:text-slate-800"
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (val === '') {
+                                        setAmount('');
+                                    } else {
+                                        const num = parseInt(val);
+                                        if (!isNaN(num)) setAmount(num.toString());
+                                    }
+                                }}
+                                className={cn(
+                                    "w-full bg-slate-950 border rounded-2xl py-5 pl-12 pr-6 text-3xl font-black text-white outline-none transition-all placeholder:text-slate-800",
+                                    (amount && (Number(amount) < 100 || Number(amount) > 1000000))
+                                        ? "border-rose-500/50 bg-rose-500/5 focus:ring-rose-500/30"
+                                        : "border-slate-800 focus:ring-indigo-600/50"
+                                )}
                             />
                         </div>
+                        {amount && Number(amount) < 100 && (
+                            <p className="text-[10px] font-bold text-rose-500 uppercase tracking-widest ml-1 animate-pulse">Minimum deposit is ₹100</p>
+                        )}
+                        {amount && Number(amount) > 1000000 && (
+                            <p className="text-[10px] font-bold text-rose-500 uppercase tracking-widest ml-1 animate-pulse">Maximum limit is ₹10,00,000</p>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">

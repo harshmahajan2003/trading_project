@@ -10,10 +10,12 @@ const walletSchema = new mongoose.Schema(
     balance: {
       type: Number,
       default: 0,
+      min: [0, "Balance cannot be negative"],
     },
     lockedBalance: {
       type: Number,
       default: 0,
+      min: [0, "Locked balance cannot be negative"],
     },
   },
   { timestamps: true }

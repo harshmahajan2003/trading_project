@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { User, Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
+import { User, Mail, Lock, Loader2, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { cn } from '../utils/cn';
 
 const Register = () => {
     const [name, setName] = useState('');
@@ -88,7 +89,10 @@ const Register = () => {
                         )}
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300 ml-1">Full Name</label>
+                            <div className="flex justify-between items-center ml-1">
+                                <label className="text-sm font-medium text-slate-300">Full Name</label>
+                                {name.trim().length >= 2 && <CheckCircle2 className="w-4 h-4 text-emerald-500 animate-in zoom-in" />}
+                            </div>
                             <div className="relative">
                                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                                 <input
@@ -96,14 +100,23 @@ const Register = () => {
                                     required
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="w-full bg-slate-950/50 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                                    className={cn(
+                                        "w-full bg-slate-950/50 border rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none transition-all",
+                                        name && name.trim().length < 2 ? "border-rose-500/50 bg-rose-500/5 focus:ring-rose-500/20" : "border-slate-800 focus:ring-indigo-500/50"
+                                    )}
                                     placeholder="John Doe"
                                 />
                             </div>
+                            {name && name.trim().length < 2 && (
+                                <p className="text-[10px] text-rose-500 font-bold uppercase tracking-widest ml-1">Min 2 characters</p>
+                            )}
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300 ml-1">Email Address</label>
+                            <div className="flex justify-between items-center ml-1">
+                                <label className="text-sm font-medium text-slate-300">Email Address</label>
+                                {/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email) && <CheckCircle2 className="w-4 h-4 text-emerald-500 animate-in zoom-in" />}
+                            </div>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                                 <input
@@ -111,14 +124,20 @@ const Register = () => {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full bg-slate-950/50 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                                    className={cn(
+                                        "w-full bg-slate-950/50 border rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none transition-all",
+                                        email && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email) ? "border-rose-500/50 bg-rose-500/5 focus:ring-rose-500/20" : "border-slate-800 focus:ring-indigo-500/50"
+                                    )}
                                     placeholder="name@example.com"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300 ml-1">Password</label>
+                            <div className="flex justify-between items-center ml-1">
+                                <label className="text-sm font-medium text-slate-300">Password</label>
+                                {password.length >= 8 && <ShieldCheck className="w-4 h-4 text-emerald-500 animate-in zoom-in" />}
+                            </div>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                                 <input
@@ -126,10 +145,19 @@ const Register = () => {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full bg-slate-950/50 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                                    className={cn(
+                                        "w-full bg-slate-950/50 border rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none transition-all",
+                                        password && password.length < 6 ? "border-rose-500/50 bg-rose-500/5 focus:ring-rose-500/20" : "border-slate-800 focus:ring-indigo-500/50"
+                                    )}
                                     placeholder="••••••••"
                                 />
                             </div>
+                            {password && password.length < 6 && (
+                                <p className="text-[10px] text-rose-500 font-bold uppercase tracking-widest ml-1">Min 6 characters</p>
+                            )}
+                            {password.length >= 8 && (
+                                <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest ml-1">Strong Password ✨</p>
+                            )}
                         </div>
 
                         <button

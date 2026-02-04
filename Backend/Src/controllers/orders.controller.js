@@ -17,16 +17,28 @@ exports.buyStock = async (req, res) => {
     const userId = req.user._id;
     const { symbol, quantity, type, triggerPrice, stopLoss, target } = req.body;
 
-    if (!symbol || !quantity || quantity <= 0) {
-      throw new Error("Invalid input");
+    if (!symbol || !quantity) {
+      return res.status(400).json({ message: "Symbol and quantity are required" });
+    }
+
+    const numQty = Number(quantity);
+    if (!Number.isInteger(numQty) || numQty <= 0) {
+      return res.status(400).json({ message: "Quantity must be a positive integer" });
+    }
+
+    if (numQty > 100000) {
+      return res.status(400).json({ message: "Maximum order quantity is 100,000" });
     }
 
     const stock = await Stock.findOne({ symbol: symbol.toUpperCase() });
     if (!stock) throw new Error("Stock not found");
 
-    const executionPrice = type === "LIMIT" ? triggerPrice : stock.price;
-    if (type === "LIMIT" && (!triggerPrice || triggerPrice <= 0)) {
-      throw new Error("Trigger price required for limit orders");
+    const executionPrice = type === "LIMIT" ? Number(triggerPrice) : stock.price;
+    if (type === "LIMIT" && (isNaN(executionPrice) || executionPrice <= 0)) {
+      return res.status(400).json({ message: "Valid trigger price required for limit orders" });
+    }
+    if (isNaN(executionPrice) || executionPrice <= 0) {
+      return res.status(400).json({ message: "Invalid execution price" });
     }
 
     const totalCost = executionPrice * quantity;
@@ -157,8 +169,17 @@ exports.sellStock = async (req, res) => {
     const userId = req.user._id;
     const { symbol, quantity } = req.body;
 
-    if (!symbol || !quantity || quantity <= 0) {
-      throw new Error("Invalid input");
+    if (!symbol || !quantity) {
+      return res.status(400).json({ message: "Symbol and quantity are required" });
+    }
+
+    const numQty = Number(quantity);
+    if (!Number.isInteger(numQty) || numQty <= 0) {
+      return res.status(400).json({ message: "Quantity must be a positive integer" });
+    }
+
+    if (numQty > 100000) {
+      return res.status(400).json({ message: "Maximum sell quantity is 100,000" });
     }
 
     const stock = await Stock.findOne({ symbol: symbol.toUpperCase() });

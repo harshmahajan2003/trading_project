@@ -16,7 +16,8 @@ const stockSchema = new mongoose.Schema(
     },
     price: {
       type: Number,
-      required: true,
+      required: [true, "Price is required"],
+      min: [0.01, "Price must be at least 0.01"],
     },
     changePercent: {
       type: Number,
