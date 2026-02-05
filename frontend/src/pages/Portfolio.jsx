@@ -246,16 +246,16 @@ const Portfolio = () => {
                             )}
                         </div>
 
-                        <div className="hidden md:block overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-slate-950/50 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                        <div className="hidden md:block">
+                            <table className="w-full text-left border-collapse">
+                                <thead className="bg-slate-950/50 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-800">
                                     <tr>
-                                        <th className="px-5 py-5">Asset</th>
-                                        <th className="px-5 py-5 text-right">Qty</th>
-                                        <th className="px-5 py-5 text-right hidden lg:table-cell">LTP</th>
-                                        <th className="px-5 py-5 text-right">Value</th>
-                                        <th className="px-5 py-5 text-right">P&L</th>
-                                        <th className="px-5 py-5 text-right">Actions</th>
+                                        <th className="px-3 py-4 whitespace-nowrap">Asset</th>
+                                        <th className="px-3 py-4 text-right whitespace-nowrap">Qty</th>
+                                        <th className="px-3 py-4 text-right hidden lg:table-cell whitespace-nowrap">LTP</th>
+                                        <th className="px-3 py-4 text-right whitespace-nowrap">Value</th>
+                                        <th className="px-3 py-4 text-right whitespace-nowrap">P&L</th>
+                                        <th className="px-3 py-4 text-right whitespace-nowrap">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800/50">
@@ -269,26 +269,26 @@ const Portfolio = () => {
                                         const pct = inv > 0 ? (pnl / inv) * 100 : 0;
                                         return (
                                             <tr key={i} className="hover:bg-slate-800/40 transition-all group cursor-pointer" onClick={() => navigate(`/market/${(symbol || '').toUpperCase()}`)}>
-                                                <td className="px-5 py-5">
+                                                <td className="px-3 py-4 whitespace-nowrap">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center font-black text-white text-xs group-hover:scale-110 transition-transform shadow-lg shadow-indigo-600/20">{(symbol || 'S')[0]}</div>
+                                                        <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center font-black text-white text-xs group-hover:scale-110 transition-transform shadow-lg shadow-indigo-600/20">{(symbol || 'S')[0]}</div>
                                                         <div>
                                                             <p className="font-black text-white uppercase text-sm tracking-tight">{symbol}</p>
                                                             <p className="text-[9px] font-bold text-slate-500 uppercase">Equity</p>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-5 py-5 text-right font-black text-white text-xs">{h.quantity}</td>
-                                                <td className="px-5 py-5 text-right font-mono text-slate-400 text-xs hidden lg:table-cell">₹{ltp.toLocaleString('en-IN')}</td>
-                                                <td className="px-5 py-5 text-right font-black text-white text-xs">₹{cur.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
-                                                <td className={cn("px-5 py-5 text-right font-black text-xs", pnl >= 0 ? "text-emerald-500" : "text-rose-500")}>
+                                                <td className="px-3 py-4 text-right font-black text-white text-xs whitespace-nowrap">{h.quantity}</td>
+                                                <td className="px-3 py-4 text-right font-mono text-slate-400 text-xs hidden lg:table-cell whitespace-nowrap">₹{ltp.toLocaleString('en-IN')}</td>
+                                                <td className="px-3 py-4 text-right font-black text-white text-xs whitespace-nowrap">₹{cur.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td>
+                                                <td className={cn("px-3 py-4 text-right font-black text-xs whitespace-nowrap", pnl >= 0 ? "text-emerald-500" : "text-rose-500")}>
                                                     <div>{pnl >= 0 ? '+' : ''}{pnl.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
                                                     <div className="text-[9px] opacity-60">({pct.toFixed(1)}%)</div>
                                                 </td>
-                                                <td className="px-5 py-5 text-right" onClick={(e) => e.stopPropagation()}>
+                                                <td className="px-3 py-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                                     <div className="flex justify-end gap-2">
-                                                        <button onClick={() => setTradeModal({ show: true, symbol: symbol, side: 'BUY', price: ltp })} className="px-3 py-2 bg-emerald-500/10 text-emerald-500 rounded-xl hover:bg-emerald-500 hover:text-white transition-all text-[10px] font-black uppercase border border-emerald-500/20">Buy</button>
-                                                        <button onClick={() => setTradeModal({ show: true, symbol: symbol, side: 'SELL', price: ltp })} className="px-3 py-2 bg-rose-500/10 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all text-[10px] font-black uppercase border border-rose-500/20">Sell</button>
+                                                        <button onClick={() => setTradeModal({ show: true, symbol: symbol, side: 'BUY', price: ltp })} className="px-3 py-1.5 bg-emerald-500/10 text-emerald-500 rounded-lg hover:bg-emerald-500 hover:text-white transition-all text-[9px] font-black uppercase border border-emerald-500/20">Buy</button>
+                                                        <button onClick={() => setTradeModal({ show: true, symbol: symbol, side: 'SELL', price: ltp })} className="px-3 py-1.5 bg-rose-500/10 text-rose-500 rounded-lg hover:bg-rose-500 hover:text-white transition-all text-[9px] font-black uppercase border border-rose-500/20">Sell</button>
                                                     </div>
                                                 </td>
                                             </tr>
