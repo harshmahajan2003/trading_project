@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, TrendingUp, Wallet, History, LogOut, ShieldCheck, PlusCircle, Rocket, LifeBuoy } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, Wallet, History, LogOut, ShieldCheck, PlusCircle, Rocket, LifeBuoy, Newspaper } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useWallet } from '../context/WalletContext';
 import { cn } from '../utils/cn';
@@ -20,6 +20,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { icon: TrendingUp, label: 'Market', path: '/market' },
         { icon: Wallet, label: 'Portfolio', path: '/portfolio' },
         { icon: Rocket, label: 'IPO Hub', path: '/ipo' },
+        { icon: Newspaper, label: 'News', path: '/news' },
         { icon: History, label: 'Activity', path: '/activity' },
         { icon: LifeBuoy, label: 'Support', path: '/support' },
     ];
@@ -33,14 +34,14 @@ const Sidebar = ({ isOpen, onClose }) => {
             {/* Backdrop for mobile */}
             <div
                 className={cn(
-                    "fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300",
+                    "fixed inset-0 bg-black/60 backdrop-blur-sm z-[105] lg:hidden transition-opacity duration-300",
                     isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 onClick={onClose}
             />
 
             <aside className={cn(
-                "fixed inset-y-0 left-0 w-64 border-r border-slate-800 bg-[#0a0a0a] flex flex-col h-screen z-50 transition-transform duration-300 lg:sticky lg:translate-x-0 lg:z-30",
+                "fixed inset-y-0 left-0 w-64 border-r border-slate-800 bg-[#0a0a0a] flex flex-col h-screen z-[110] transition-transform duration-300 lg:sticky lg:translate-x-0 lg:z-30",
                 isOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 <div className="flex items-center justify-between lg:block">

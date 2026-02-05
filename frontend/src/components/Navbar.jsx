@@ -74,7 +74,7 @@ const Navbar = () => {
     };
 
     return (
-        <header className="h-16 border-b border-slate-800 bg-[#0a0a0a]/80 backdrop-blur-md sticky top-0 z-[100] px-8 flex items-center justify-between">
+        <header className="h-16 border-b border-slate-800 bg-[#0a0a0a]/80 backdrop-blur-md sticky top-0 z-[100] px-4 md:px-8 flex items-center justify-between">
             <div className="relative w-96 hidden md:block" ref={searchRef}>
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                 <input
@@ -122,11 +122,11 @@ const Navbar = () => {
                 )}
             </div>
 
-            <div className="flex items-center gap-6">
-                {/* Add News Button */}
+            <div className="flex items-center gap-3 md:gap-6">
+                {/* Add News Button - Hidden on mobile, shown on desktop */}
                 <button
                     onClick={() => navigate('/news')}
-                    className="text-slate-400 hover:text-indigo-400 transition-colors p-2 text-xs font-bold uppercase tracking-widest flex items-center gap-2"
+                    className="hidden md:flex text-slate-400 hover:text-indigo-400 transition-colors p-2 text-xs font-bold uppercase tracking-widest items-center gap-2"
                     title="Market News"
                 >
                     NEWS
