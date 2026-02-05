@@ -160,4 +160,11 @@ export const paymentService = {
     }
 };
 
+export const newsService = {
+    getLatestNews: async () => {
+        const res = await api.get('/news');
+        return res.data;
+    }
+};
+
 export default api;

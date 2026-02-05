@@ -123,6 +123,14 @@ const Navbar = () => {
             </div>
 
             <div className="flex items-center gap-6">
+                {/* Add News Button */}
+                <button
+                    onClick={() => navigate('/news')}
+                    className="text-slate-400 hover:text-indigo-400 transition-colors p-2 text-xs font-bold uppercase tracking-widest flex items-center gap-2"
+                    title="Market News"
+                >
+                    NEWS
+                </button>
                 <div className="relative">
                     <button
                         onClick={() => {

@@ -37,6 +37,7 @@ app.use("/api/user", require("./routes/user.routes"));
 app.use("/api/ipo", require("./routes/ipo.routes"));
 app.use("/api/notifications", require("./routes/notification.routes"));
 app.use("/api/support", require("./routes/support.routes"));
+app.use("/api/news", require("./routes/news.routes"));
 
 // ===== HEALTH CHECK =====
 app.get("/", (req, res) => {
