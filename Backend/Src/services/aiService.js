@@ -1,9 +1,5 @@
 const Groq = require("groq-sdk");
 
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY
-});
-
 /**
  * Analyzes market news for sentiment and summary using Groq AI.
  * @param {string} headline - News headline
@@ -11,7 +7,14 @@ const groq = new Groq({
  * @returns {Promise<{sentiment: string, summary: string, impact: string[]}>}
  */
 const analyzeMarketNews = async (headline, content) => {
+    // 🛡️ Prevent Crash: Check Key lazily
+    if (!process.env.GROQ_API_KEY) {
+        console.warn("⚠️ SKIPPING AI ANALYSIS: GROQ_API_KEY is missing/undefined");
+        return { sentiment: "Neutral", summary: headline, impact: [] };
+    }
+
     try {
+        const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
         const prompt = `
         You are a financial analyst AI. Analyze the following news:
         
