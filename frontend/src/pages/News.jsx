@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Newspaper, TrendingUp, TrendingDown, Minus, Loader2, Sparkles } from 'lucide-react';
 import { newsService } from '../services/api';
-import Navbar from '../components/Navbar';
 
 const News = () => {
     const [news, setNews] = useState([]);
@@ -28,10 +27,8 @@ const News = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white font-sans selection:bg-indigo-500/30">
-            <Navbar />
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-20">
+        <div className="text-white font-sans selection:bg-indigo-500/30">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <header className="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <h1 className="text-4xl font-black tracking-tighter mb-2 flex items-center gap-3">
                         <Newspaper className="w-8 h-8 text-indigo-500" />
