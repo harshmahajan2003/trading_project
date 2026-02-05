@@ -42,6 +42,9 @@ const register = async (req, res) => {
   }
 };
 
+const Notification = require("../models/Notification");
+const { generateDailyBrief } = require("../services/aiService");
+
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -54,6 +57,37 @@ const login = async (req, res) => {
     return res.status(401).json({ message: "Invalid credentials" });
 
   res.json({ token: genToken(user._id) });
+
+  // 🧠 AI BACKGROUND TASK: Generate Daily Wise Words
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const todaysNotifs = await Notification.countDocuments({
+      user: user._id,
+      createdAt: { $gte: startOfDay },
+      type: "SYSTEM" // Only count AI tips
+    });
+
+    if (todaysNotifs === 0) {
+      console.log(`🧠 Generating Daily AI Brief for ${user.name}...`);
+      const brief = await generateDailyBrief(user.name);
+
+      if (brief && brief.length > 0) {
+        const notifDocs = brief.map(n => ({
+          user: user._id,
+          title: n.title,
+          message: n.message,
+          type: "SYSTEM"
+        }));
+        await Notification.insertMany(notifDocs);
+        console.log("✅ AI Brief delivered!");
+      }
+    }
+  } catch (err) {
+    console.error("AI Brief Background Error:", err);
+    // Don't block login
+  }
 };
 
 module.exports = { register, login };

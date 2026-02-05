@@ -54,4 +54,48 @@ const analyzeMarketNews = async (headline, content) => {
     }
 };
 
-module.exports = { analyzeMarketNews };
+/**
+ * Generates 3-5 short daily market/trading notifications.
+ * @param {string} userName
+ * @returns {Promise<Array<{title: string, message: string, type: string}>>}
+ */
+const generateDailyBrief = async (userName) => {
+    // 🛡️ Prevent Crash
+    if (!process.env.GROQ_API_KEY) return [];
+
+    try {
+        const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+        const prompt = `
+        Generate 3 short, engaging daily notifications for a stock trader named "${userName}".
+        
+        Mix of:
+        1. Market Wisdom (Tip)
+        2. Motivation
+        3. A "Look ahead" at the market.
+
+        Format: JSON Array of objects with "title", "message", and "type" ("SYSTEM").
+        Max 15 words per message.
+        Example:
+        [
+            {"title": "Morning ${userName}! ☀️", "message": "The market rewards patience. Trade wisely today.", "type": "SYSTEM"},
+            {"title": "Pro Tip 💡", "message": "Never ignore your stop-loss. Capital preservation is key.", "type": "SYSTEM"}
+        ]
+        `;
+
+        const completion = await groq.chat.completions.create({
+            messages: [{ role: "user", content: prompt }],
+            model: "mixtral-8x7b-32768",
+            temperature: 0.7,
+        });
+
+        const result = completion.choices[0]?.message?.content || "[]";
+        const cleanJson = result.replace(/```json/g, "").replace(/```/g, "").trim();
+        return JSON.parse(cleanJson);
+
+    } catch (error) {
+        console.error("🔥 GROQ BRIEF ERROR:", error.message);
+        return [];
+    }
+};
+
+module.exports = { analyzeMarketNews, generateDailyBrief };
