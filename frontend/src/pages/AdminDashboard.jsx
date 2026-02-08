@@ -425,13 +425,13 @@ const AdminDashboard = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {ipos.filter(ipo => ipo.status !== 'LISTED').length > 0 ? ipos.filter(ipo => ipo.status !== 'LISTED').map(ipo => (
                                 <div key={ipo?._id} className="group hover:scale-[1.02] bg-slate-900/40 border border-slate-800 hover:border-indigo-500/30 rounded-[2.5rem] p-8 transition-all duration-500 backdrop-blur-sm relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-8">
+                                    <div className="absolute top-0 right-0 p-8 z-10">
                                         <span className={cn(
-                                            "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border shadow-lg",
-                                            ipo.status === 'OPEN' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/5" :
-                                                ipo.status === 'UPCOMING' ? "bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-amber-500/5" :
-                                                    ipo.status === 'ALLOTTED' ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" :
-                                                        "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                                            "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border shadow-2xl backdrop-blur-md",
+                                            ipo.status === 'OPEN' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10" :
+                                                ipo.status === 'UPCOMING' ? "bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-amber-500/10" :
+                                                    ipo.status === 'ALLOTTED' ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20 shadow-indigo-500/10" :
+                                                        "bg-rose-500/10 text-rose-400 border-rose-500/20 shadow-rose-500/10"
                                         )}>
                                             {ipo.status}
                                         </span>
@@ -618,20 +618,20 @@ const AdminDashboard = () => {
                                                                 </td>
                                                                 <td className="py-6 text-right pr-2">
                                                                     {app.status === 'PENDING' ? (
-                                                                        <div className="flex items-center justify-end gap-3 opacity-20 group-hover:opacity-100 transition-all transform group-hover:translate-x-0 translate-x-4">
+                                                                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
                                                                             <button
                                                                                 disabled={processingApp === app._id}
                                                                                 onClick={() => handleAllotment(app._id, 'ALLOT')}
-                                                                                className="h-10 px-4 flex items-center gap-2 transition-all hover:bg-emerald-500 bg-emerald-500/10 text-emerald-500 hover:text-white rounded-xl border border-emerald-500/20 font-black text-[10px] uppercase tracking-widest"
+                                                                                className="h-9 px-4 flex items-center gap-2 transition-all hover:bg-emerald-500 bg-emerald-500/10 text-emerald-500 hover:text-white rounded-xl border border-emerald-500/20 font-black text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-500/10"
                                                                             >
-                                                                                <CheckCircle className="w-4 h-4" /> Allot
+                                                                                <CheckCircle className="w-3.5 h-3.5" /> Allot
                                                                             </button>
                                                                             <button
                                                                                 disabled={processingApp === app._id}
                                                                                 onClick={() => handleAllotment(app._id, 'REJECT')}
-                                                                                className="h-10 px-4 flex items-center gap-2 transition-all hover:bg-rose-500 bg-rose-500/10 text-rose-500 hover:text-white rounded-xl border border-rose-500/20 font-black text-[10px] uppercase tracking-widest"
+                                                                                className="h-9 px-4 flex items-center gap-2 transition-all hover:bg-rose-500 bg-rose-500/10 text-rose-500 hover:text-white rounded-xl border border-rose-500/20 font-black text-[10px] uppercase tracking-widest shadow-lg shadow-rose-500/10"
                                                                             >
-                                                                                <XCircle className="w-4 h-4" /> Reject
+                                                                                <XCircle className="w-3.5 h-3.5" /> Reject
                                                                             </button>
                                                                         </div>
                                                                     ) : (
