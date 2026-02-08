@@ -305,4 +305,21 @@ const listIPOAsStock = async (req, res) => {
   }
 };
 
-module.exports = { createIPO, getIPOs, applyIPO, getIPOApplications, runBulkAllotment, listIPOAsStock };
+// ADMIN: UPDATE IPO STATUS
+const updateIPOStatus = async (req, res) => {
+  const { ipoId, status } = req.body;
+
+  if (!['UPCOMING', 'OPEN', 'CLOSED', 'ALLOTTED', 'LISTED'].includes(status)) {
+    return res.status(400).json({ message: "Invalid status value" });
+  }
+
+  try {
+    const ipo = await IPO.findByIdAndUpdate(ipoId, { status }, { new: true });
+    if (!ipo) return res.status(404).json({ message: "IPO not found" });
+    res.json(ipo);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { createIPO, getIPOs, applyIPO, getIPOApplications, runBulkAllotment, listIPOAsStock, updateIPOStatus };

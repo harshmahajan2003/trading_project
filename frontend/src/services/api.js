@@ -135,6 +135,10 @@ export const ipoService = {
     adminListOnMarket: async (ipoId) => {
         const res = await api.post('/ipo/admin/list', { ipoId });
         return res.data;
+    },
+    adminUpdateStatus: async (ipoId, status) => {
+        const res = await api.patch('/ipo/admin/status', { ipoId, status });
+        return res.data;
     }
 };
 

@@ -249,6 +249,18 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleUpdateStatus = async (ipoId, status) => {
+        try {
+            await ipoService.adminUpdateStatus(ipoId, status);
+            setAlertModal({ show: true, title: 'Status Updated', message: `IPO status changed to ${status}`, type: 'success' });
+            // Refresh
+            const iposData = await ipoService.getIPOs();
+            setIpos(Array.isArray(iposData) ? iposData : []);
+        } catch (err) {
+            setAlertModal({ show: true, title: 'Update Failed', message: err.response?.data?.message || "Failed to update status", type: 'danger' });
+        }
+    };
+
     if (loading) return <div className="flex items-center justify-center min-h-[60vh]"><Loader2 className="w-10 h-10 text-indigo-500 animate-spin" /></div>;
 
     const tabs = [
@@ -417,8 +429,9 @@ const AdminDashboard = () => {
                                         <span className={cn(
                                             "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border shadow-lg",
                                             ipo.status === 'OPEN' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/5" :
-                                                ipo.status === 'ALLOTTED' ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" :
-                                                    "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                                                ipo.status === 'UPCOMING' ? "bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-amber-500/5" :
+                                                    ipo.status === 'ALLOTTED' ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" :
+                                                        "bg-rose-500/10 text-rose-400 border-rose-500/20"
                                         )}>
                                             {ipo.status}
                                         </span>
@@ -449,8 +462,26 @@ const AdminDashboard = () => {
                                     </div>
 
                                     <div className="flex flex-col gap-3">
+                                        {ipo.status === 'UPCOMING' && (
+                                            <button
+                                                onClick={() => handleUpdateStatus(ipo._id, 'OPEN')}
+                                                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-[1.25rem] transition-all text-xs uppercase tracking-widest shadow-lg shadow-indigo-600/20 mb-1"
+                                            >
+                                                Open for Subscription
+                                            </button>
+                                        )}
+
+                                        {ipo.status === 'OPEN' && (
+                                            <button
+                                                onClick={() => handleUpdateStatus(ipo._id, 'CLOSED')}
+                                                className="w-full bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-500 font-black py-4 rounded-[1.25rem] transition-all text-xs uppercase tracking-widest border border-rose-500/20 mb-1"
+                                            >
+                                                Close Subscription
+                                            </button>
+                                        )}
+
                                         <button
-                                            className="w-full bg-slate-800/80 hover:bg-indigo-600 text-white font-black py-4 rounded-[1.25rem] transition-all text-xs uppercase tracking-widest border border-slate-700/50 hover:border-indigo-500 shadow-lg"
+                                            className="w-full bg-slate-800/80 hover:bg-slate-700 text-white font-black py-4 rounded-[1.25rem] transition-all text-xs uppercase tracking-widest border border-slate-700/50 hover:border-slate-600 shadow-lg"
                                             onClick={() => handleViewApplications(ipo)}
                                         >
                                             View Applications
