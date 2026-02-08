@@ -612,12 +612,12 @@ const AdminDashboard = () => {
                                         </div>
                                     </div>
 
-                                    <div className="flex-1 overflow-y-auto p-8">
+                                    <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
                                         {applications.length > 0 ? (
                                             <table className="w-full text-left">
-                                                <thead>
+                                                <thead className="sticky top-0 bg-[#0b0f19] z-10 shadow-sm shadow-black/50">
                                                     <tr className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] border-b border-white/5">
-                                                        <th className="pb-6 pl-2">Applicant Detail</th>
+                                                        <th className="pb-4 pl-2">Applicant Detail</th>
                                                         <th className="pb-6">Bid Strategy</th>
                                                         <th className="pb-6">Blocked Value</th>
                                                         <th className="pb-6">Current Status</th>
