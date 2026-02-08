@@ -523,8 +523,8 @@ const AdminDashboard = () => {
 
                         {/* IPO Applications Detailed View */}
                         {viewingApps && selectedIpo && (
-                            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-300">
-                                <div className="bg-[#020617] border border-slate-800 w-full max-w-4xl max-h-[90vh] rounded-[2.5rem] flex flex-col shadow-2xl overflow-hidden">
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-300">
+                                <div className="bg-[#020617] border border-slate-800 w-full max-w-5xl max-h-[90vh] rounded-[2.5rem] flex flex-col shadow-2xl overflow-hidden relative">
                                     {/* Modal Header with Glassmorphism and Mesh Gradient */}
                                     <div className="relative p-10 border-b border-white/5 overflow-hidden">
                                         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-transparent pointer-events-none" />
@@ -539,13 +539,56 @@ const AdminDashboard = () => {
                                                         <span className="bg-indigo-500/20 text-indigo-400 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] border border-indigo-500/30 backdrop-blur-md">
                                                             {applications.length} TOTAL BIDS
                                                         </span>
+                                                        <span className={cn(
+                                                            "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border backdrop-blur-md",
+                                                            selectedIpo.status === 'OPEN' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10 animate-pulse-slow" :
+                                                                selectedIpo.status === 'UPCOMING' ? "bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-amber-500/10" :
+                                                                    selectedIpo.status === 'ALLOTTED' ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20 shadow-indigo-500/10" :
+                                                                        "bg-rose-500/10 text-rose-400 border-rose-500/20 shadow-rose-500/10"
+                                                        )}>
+                                                            {selectedIpo.status}
+                                                        </span>
                                                     </div>
                                                     <p className="text-slate-400 font-bold text-sm mt-1 uppercase tracking-widest opacity-80">{selectedIpo.companyName} • ₹{selectedIpo.price} Per Share</p>
                                                 </div>
                                             </div>
 
                                             <div className="flex items-center gap-4">
-                                                {applications.some(a => a.status === 'PENDING') && (
+                                                {/* Status Control Actions */}
+                                                {selectedIpo.status === 'UPCOMING' && (
+                                                    <button
+                                                        onClick={async () => {
+                                                            await handleUpdateStatus(selectedIpo._id, 'OPEN');
+                                                            setSelectedIpo((prev) => ({ ...prev, status: 'OPEN' }));
+                                                        }}
+                                                        className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-indigo-600/20"
+                                                    >
+                                                        Open Subscription
+                                                    </button>
+                                                )}
+
+                                                {selectedIpo.status === 'OPEN' && (
+                                                    <button
+                                                        onClick={async () => {
+                                                            await handleUpdateStatus(selectedIpo._id, 'CLOSED');
+                                                            setSelectedIpo((prev) => ({ ...prev, status: 'CLOSED' }));
+                                                        }}
+                                                        className="px-6 py-3 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white border border-rose-500/20 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-rose-500/5 hover:shadow-rose-500/20"
+                                                    >
+                                                        Close Subscription
+                                                    </button>
+                                                )}
+
+                                                {selectedIpo.status === 'ALLOTTED' && (
+                                                    <button
+                                                        onClick={() => handleListIPO(selectedIpo._id)}
+                                                        className="flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20"
+                                                    >
+                                                        <Rocket className="w-4 h-4" /> Finalize Listing
+                                                    </button>
+                                                )}
+
+                                                {applications.some(a => a.status === 'PENDING') && selectedIpo.status !== 'LISTED' && (
                                                     <button
                                                         onClick={handleRunAllotment}
                                                         disabled={adding}
