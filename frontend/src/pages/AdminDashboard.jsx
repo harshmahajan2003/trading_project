@@ -524,7 +524,7 @@ const AdminDashboard = () => {
                         {/* IPO Applications Detailed View */}
                         {viewingApps && selectedIpo && (
                             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-                                <div className="bg-[#0b0f19] border border-slate-700/50 w-full max-w-5xl h-[85vh] rounded-[2rem] flex flex-col shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
+                                <div className="bg-[#0b0f19] border border-slate-700/50 w-full max-w-4xl max-h-[85vh] rounded-[2rem] flex flex-col shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
                                     {/* Modal Header with Glassmorphism and Mesh Gradient */}
                                     <div className="relative px-8 py-6 border-b border-sidebar-border bg-sidebar-bg/50 backdrop-blur-sm shrink-0">
                                         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-transparent pointer-events-none" />
