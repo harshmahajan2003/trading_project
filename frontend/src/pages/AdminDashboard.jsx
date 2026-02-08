@@ -424,90 +424,99 @@ const AdminDashboard = () => {
                     <div className="p-8 space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {ipos.filter(ipo => ipo.status !== 'LISTED').length > 0 ? ipos.filter(ipo => ipo.status !== 'LISTED').map(ipo => (
-                                <div key={ipo?._id} className="group hover:scale-[1.02] bg-slate-900/40 border border-slate-800 hover:border-indigo-500/30 rounded-[2.5rem] p-8 transition-all duration-500 backdrop-blur-sm relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-8 z-10">
-                                        <span className={cn(
-                                            "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border shadow-2xl backdrop-blur-md",
-                                            ipo.status === 'OPEN' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10" :
-                                                ipo.status === 'UPCOMING' ? "bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-amber-500/10" :
-                                                    ipo.status === 'ALLOTTED' ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20 shadow-indigo-500/10" :
-                                                        "bg-rose-500/10 text-rose-400 border-rose-500/20 shadow-rose-500/10"
-                                        )}>
-                                            {ipo.status}
-                                        </span>
-                                    </div>
+                                <div key={ipo?._id} className="group relative bg-[#0B0F19] border border-white/5 hover:border-indigo-500/20 rounded-[2rem] p-8 transition-all duration-500 overflow-hidden shadow-2xl hover:shadow-indigo-500/10 active:scale-[0.99]">
+                                    {/* Ambient Glow */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-                                    <div className="flex items-start gap-6 mb-8">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-2xl font-black text-white shadow-2xl shadow-indigo-600/20 group-hover:rotate-6 transition-transform">
-                                            {ipo.symbol?.[0]}
+                                    <div className="relative z-10">
+                                        <div className="flex justify-between items-start mb-8">
+                                            <div className="flex items-center gap-5">
+                                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 flex items-center justify-center text-2xl font-black text-white shadow-xl group-hover:scale-110 transition-transform duration-500">
+                                                    {ipo.symbol?.[0]}
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-2xl font-black text-white tracking-tight group-hover:text-indigo-400 transition-colors">{ipo.symbol}</h3>
+                                                    <p className="text-slate-500 font-bold text-xs uppercase tracking-widest mt-1">{ipo.companyName}</p>
+                                                </div>
+                                            </div>
+                                            <span className={cn(
+                                                "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border backdrop-blur-md shadow-lg",
+                                                ipo.status === 'OPEN' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-emerald-500/10 animate-pulse-slow" :
+                                                    ipo.status === 'UPCOMING' ? "bg-amber-500/10 text-amber-400 border-amber-500/20 shadow-amber-500/10" :
+                                                        ipo.status === 'ALLOTTED' ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20 shadow-indigo-500/10" :
+                                                            "bg-rose-500/10 text-rose-400 border-rose-500/20 shadow-rose-500/10"
+                                            )}>
+                                                {ipo.status}
+                                            </span>
                                         </div>
-                                        <div>
-                                            <h3 className="text-2xl font-black text-white group-hover:text-indigo-400 transition-colors uppercase tracking-tight">{ipo.symbol}</h3>
-                                            <p className="text-slate-500 font-bold text-sm tracking-wide opacity-80">{ipo.companyName}</p>
-                                        </div>
-                                    </div>
 
-                                    <div className="grid grid-cols-2 gap-6 mb-8 p-6 bg-white/[0.02] border border-white/5 rounded-3xl">
-                                        <div>
-                                            <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5 px-1">Issue Price</p>
-                                            <div className="flex items-baseline gap-1">
-                                                <span className="text-xl font-black text-white">₹{ipo.price}</span>
-                                                <span className="text-[10px] text-slate-500 font-bold">/Share</span>
+                                        <div className="grid grid-cols-2 gap-4 mb-8">
+                                            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-colors">
+                                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Offer Price</p>
+                                                <div className="flex items-baseline gap-1">
+                                                    <span className="text-xl font-black text-white">₹{ipo.price}</span>
+                                                </div>
+                                            </div>
+                                            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-colors">
+                                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Lot Size</p>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xl font-black text-indigo-400">{ipo.lotSize}</span>
+                                                    <span className="text-[10px] text-slate-500 font-bold uppercase">Qty</span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div>
-                                            <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5 px-1">Structure</p>
-                                            <p className="text-base font-black text-indigo-400 uppercase">{ipo.minLot} Lot <span className="text-[10px] opacity-60">({ipo.lotSize} Qty)</span></p>
+
+                                        <div className="flex flex-col gap-3">
+                                            {ipo.status === 'UPCOMING' && (
+                                                <button
+                                                    onClick={() => handleUpdateStatus(ipo._id, 'OPEN')}
+                                                    className="w-full h-12 flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl transition-all text-[10px] uppercase tracking-[0.15em] shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/40 hover:-translate-y-0.5"
+                                                >
+                                                    Open Subscription
+                                                </button>
+                                            )}
+
+                                            {ipo.status === 'OPEN' && (
+                                                <button
+                                                    onClick={() => handleUpdateStatus(ipo._id, 'CLOSED')}
+                                                    className="w-full h-12 flex items-center justify-center bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white font-black rounded-xl transition-all text-[10px] uppercase tracking-[0.15em] border border-rose-500/20 hover:border-transparent shadow-lg shadow-rose-500/5 hover:shadow-rose-500/30"
+                                                >
+                                                    Close Subscription
+                                                </button>
+                                            )}
+
+                                            <button
+                                                className="w-full h-12 flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-white font-black rounded-xl transition-all text-[10px] uppercase tracking-[0.15em] border border-slate-700 hover:border-slate-600"
+                                                onClick={() => handleViewApplications(ipo)}
+                                            >
+                                                View Applications
+                                            </button>
+
+                                            {ipo.status === 'ALLOTTED' && (
+                                                <button
+                                                    className="w-full h-12 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-black rounded-xl transition-all text-[10px] uppercase tracking-[0.15em] shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:-translate-y-0.5"
+                                                    onClick={() => handleListIPO(ipo._id)}
+                                                >
+                                                    <Rocket className="w-4 h-4" /> Finalize Listing
+                                                </button>
+                                            )}
+
+                                            {ipo.status === 'LISTED' && (
+                                                <div className="w-full h-12 flex items-center justify-center gap-2 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
+                                                    <CheckCircle className="w-4 h-4 text-emerald-500" />
+                                                    <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Active on Market</span>
+                                                </div>
+                                            )}
                                         </div>
-                                    </div>
-
-                                    <div className="flex flex-col gap-3">
-                                        {ipo.status === 'UPCOMING' && (
-                                            <button
-                                                onClick={() => handleUpdateStatus(ipo._id, 'OPEN')}
-                                                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-[1.25rem] transition-all text-xs uppercase tracking-widest shadow-lg shadow-indigo-600/20 mb-1"
-                                            >
-                                                Open for Subscription
-                                            </button>
-                                        )}
-
-                                        {ipo.status === 'OPEN' && (
-                                            <button
-                                                onClick={() => handleUpdateStatus(ipo._id, 'CLOSED')}
-                                                className="w-full bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-500 font-black py-4 rounded-[1.25rem] transition-all text-xs uppercase tracking-widest border border-rose-500/20 mb-1"
-                                            >
-                                                Close Subscription
-                                            </button>
-                                        )}
-
-                                        <button
-                                            className="w-full bg-slate-800/80 hover:bg-slate-700 text-white font-black py-4 rounded-[1.25rem] transition-all text-xs uppercase tracking-widest border border-slate-700/50 hover:border-slate-600 shadow-lg"
-                                            onClick={() => handleViewApplications(ipo)}
-                                        >
-                                            View Applications
-                                        </button>
-
-                                        {ipo.status === 'ALLOTTED' && (
-                                            <button
-                                                className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-black py-4 rounded-[1.25rem] transition-all text-xs uppercase tracking-[0.15em] shadow-2xl shadow-emerald-500/30 flex items-center justify-center gap-3 active:scale-95"
-                                                onClick={() => handleListIPO(ipo._id)}
-                                            >
-                                                <Rocket className="w-5 h-5 animate-bounce-slow" /> Finalize Listing
-                                            </button>
-                                        )}
-
-                                        {ipo.status === 'LISTED' && (
-                                            <div className="w-full py-4 bg-emerald-500/10 border border-emerald-500/20 rounded-[1.25rem] flex items-center justify-center gap-2">
-                                                <CheckCircle className="w-4 h-4 text-emerald-500" />
-                                                <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Active on Market</p>
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
                             )) : (
-                                <div className="col-span-full py-12 text-center bg-slate-900/40 rounded-3xl border border-dashed border-slate-800">
-                                    <Rocket className="w-12 h-12 text-slate-700 mx-auto mb-4" />
-                                    <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">No IPOs currently listed</p>
+                                <div className="col-span-full py-24 flex flex-col items-center justify-center bg-[#0B0F19] rounded-[2.5rem] border border-dashed border-slate-800/50">
+                                    <div className="w-20 h-20 rounded-full bg-slate-800/50 flex items-center justify-center mb-6 animate-pulse-slow">
+                                        <Rocket className="w-10 h-10 text-slate-600" />
+                                    </div>
+                                    <h3 className="text-xl font-black text-white mb-2">No Active IPOs</h3>
+                                    <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Create a new listing to get started</p>
                                 </div>
                             )}
                         </div>
