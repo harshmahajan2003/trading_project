@@ -523,21 +523,21 @@ const AdminDashboard = () => {
 
                         {/* IPO Applications Detailed View */}
                         {viewingApps && selectedIpo && (
-                            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-300">
-                                <div className="bg-[#020617] border border-slate-800 w-full max-w-5xl max-h-[90vh] rounded-[2.5rem] flex flex-col shadow-2xl overflow-hidden relative">
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+                                <div className="bg-[#0b0f19] border border-slate-700/50 w-full max-w-5xl h-[85vh] rounded-[2rem] flex flex-col shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
                                     {/* Modal Header with Glassmorphism and Mesh Gradient */}
-                                    <div className="relative p-10 border-b border-white/5 overflow-hidden">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-transparent pointer-events-none" />
+                                    <div className="relative px-8 py-6 border-b border-sidebar-border bg-sidebar-bg/50 backdrop-blur-sm shrink-0">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-transparent pointer-events-none" />
                                         <div className="relative flex items-center justify-between">
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center text-3xl font-black text-white shadow-2xl shadow-indigo-600/30">
+                                            <div className="flex items-center gap-5">
+                                                <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-2xl font-black text-white shadow-xl shadow-indigo-600/20">
                                                     {selectedIpo.symbol?.[0]}
                                                 </div>
                                                 <div>
-                                                    <div className="flex items-center gap-4">
-                                                        <h2 className="text-3xl font-black text-white tracking-tighter">{selectedIpo.symbol} Applications</h2>
-                                                        <span className="bg-indigo-500/20 text-indigo-400 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] border border-indigo-500/30 backdrop-blur-md">
-                                                            {applications.length} TOTAL BIDS
+                                                    <div className="flex items-center gap-3">
+                                                        <h2 className="text-2xl font-black text-white tracking-tight">{selectedIpo.symbol}</h2>
+                                                        <span className="bg-indigo-500/10 text-indigo-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider border border-indigo-500/20">
+                                                            {applications.length} Bids
                                                         </span>
                                                         <span className={cn(
                                                             "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border backdrop-blur-md",
@@ -604,9 +604,9 @@ const AdminDashboard = () => {
                                                         setViewingApps(false);
                                                         setSelectedIpo(null);
                                                     }}
-                                                    className="w-12 h-12 rounded-2xl bg-slate-800/80 hover:bg-slate-700 hover:text-white text-slate-400 flex items-center justify-center transition-all border border-slate-700/50 backdrop-blur-md"
+                                                    className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 hover:text-white text-slate-400 flex items-center justify-center transition-all border border-slate-700"
                                                 >
-                                                    <XCircle className="w-6 h-6" />
+                                                    <XCircle className="w-5 h-5" />
                                                 </button>
                                             </div>
                                         </div>
@@ -703,18 +703,18 @@ const AdminDashboard = () => {
                                         )}
                                     </div>
 
-                                    <div className="p-8 bg-slate-900/40 border-t border-slate-800 flex items-center justify-between">
-                                        <p className="text-xs text-slate-500 italic max-w-sm leading-relaxed">
-                                            Important: Allotting shares will immediately transfer securities to the client portfolio and confirm the blocked funds. This action cannot be undone.
+                                    <div className="px-8 py-4 bg-[#0b0f19] border-t border-slate-800 flex items-center justify-between shrink-0">
+                                        <p className="text-[10px] text-slate-500 max-w-sm leading-relaxed">
+                                            Actions are final. Ensure ledger balance before alloting.
                                         </p>
                                         <button
                                             onClick={() => {
                                                 setViewingApps(false);
                                                 setSelectedIpo(null);
                                             }}
-                                            className="px-8 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all"
+                                            className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all border border-slate-700"
                                         >
-                                            Close Viewer
+                                            Close
                                         </button>
                                     </div>
                                 </div>
