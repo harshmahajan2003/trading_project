@@ -2,12 +2,31 @@ const express = require("express");
 const cors = require("cors");
 const passport = require("passport");
 const session = require("express-session");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
 require("./config/passport");
 
 const app = express();
 
 // Trust proxy for HTTPS cookie/redirect support on Render
 app.set('trust proxy', 1);
+
+// 🛡️ SECURITY MIDDLEWARE
+app.use(helmet()); // Set security headers
+app.use(mongoSanitize()); // Prevent NoSQL Injection
+app.use(xss()); // Prevent XSS Attacks
+
+// ⏳ RATE LIMITING (Global)
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // Limit each IP to 200 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many requests from this IP, please try again after 15 minutes"
+});
+app.use("/api", limiter);
 
 app.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:5173",

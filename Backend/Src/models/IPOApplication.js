@@ -34,4 +34,7 @@ const ipoApplicationSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+// 🛡️ SECURITY: Prevent Double Booking (Race Condition)
+ipoApplicationSchema.index({ ipo: 1, user: 1 }, { unique: true });
+
 module.exports = mongoose.model("IPOApplication", ipoApplicationSchema);
