@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { TrendingUp, ShieldCheck, Zap, Globe, ArrowRight, BarChart3, Rocket } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
@@ -174,9 +174,9 @@ const Landing = () => {
                         </p>
                     </div>
                     <div className="flex gap-12 text-sm font-bold text-slate-500 uppercase tracking-widest">
-                        <a href="#" className="hover:text-white transition-colors">Privacy</a>
-                        <a href="#" className="hover:text-white transition-colors">Terms</a>
-                        <a href="#" className="hover:text-white transition-colors">Support</a>
+                        <Link to="#" className="hover:text-white transition-colors">Privacy</Link>
+                        <Link to="#" className="hover:text-white transition-colors">Terms</Link>
+                        <Link to="#" className="hover:text-white transition-colors">Support</Link>
                     </div>
                     <p className="text-slate-600 text-[10px] font-black uppercase tracking-[0.3em]">
                         © 2026 trade.ai corp. all rights reserved

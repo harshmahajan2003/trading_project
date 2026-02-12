@@ -20,7 +20,7 @@ const AuthSuccess = () => {
                 .then(user => {
                     const fullUser = { ...user, token };
                     localStorage.setItem('trading_user', JSON.stringify(fullUser));
-                    window.location.href = '/dashboard';
+                    navigate('/dashboard');
                 })
                 .catch(err => {
                     console.error("Profile fetch failed:", err);
