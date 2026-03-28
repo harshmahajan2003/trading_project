@@ -14,11 +14,28 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedUser = authService.getCurrentUser();
-        if (storedUser) {
-            setUser(storedUser);
-        }
-        setLoading(false);
+        const initAuth = async () => {
+            const storedUser = authService.getCurrentUser();
+            if (storedUser) {
+                // If we have a token but no name, fetch the profile
+                if (storedUser.token && !storedUser.name) {
+                    try {
+                        const profile = await authService.getProfile();
+                        const fullUser = { ...storedUser, ...profile };
+                        setUser(fullUser);
+                        // Sync back to sessionStorage
+                        sessionStorage.setItem('trading_user', JSON.stringify(fullUser));
+                    } catch (err) {
+                        console.error("Failed to fetch profile on init:", err);
+                        setUser(storedUser);
+                    }
+                } else {
+                    setUser(storedUser);
+                }
+            }
+            setLoading(false);
+        };
+        initAuth();
     }, []);
 
     const login = async (email, password) => {
