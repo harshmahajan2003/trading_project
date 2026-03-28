@@ -51,48 +51,70 @@ let lastFetchDate = null; // To track "Today"
 
 const getLatestNews = async (req, res) => {
     try {
-        const today = new Date().toDateString();
+        const now = new Date();
+        const cacheExpiry = 30 * 60 * 1000; // 30 minutes cache
 
-        // 1. Return cached data if available for TODAY
-        if (processedNewsCache && lastFetchDate === today) {
-            console.log("✅ Serving Cached News for", today);
+        // 1. Return cached data if available and fresh
+        if (processedNewsCache && (now - lastFetchDate < cacheExpiry)) {
+            console.log("✅ Serving Cached News (Last Sync:", lastFetchDate.toLocaleTimeString(), ")");
             return res.json(processedNewsCache);
         }
 
-        console.log("🔄 Generating FRESH News with AI for", today);
+        console.log("🔄 Fetching FRESH Market News...");
         let newsData = [];
 
         // 2. Try fetching from AI
-        const aiNews = await aiService.generateMarketNews();
+        try {
+            const aiNews = await aiService.generateMarketNews();
+            if (aiNews && aiNews.length > 0) {
+                newsData = aiNews.map((n, i) => ({
+                    id: `ai-${Date.now()}-${i}`,
+                    ...n,
+                    image: MOCK_NEWS[i % MOCK_NEWS.length].image 
+                }));
+            }
+        } catch (aiErr) {
+            console.warn("⚠️ AI News Generation Failed:", aiErr.message);
+        }
 
-        if (aiNews && aiNews.length > 0) {
-            // Attach random images from our pool to AI news
-            newsData = aiNews.map((n, i) => ({
-                id: i + 1,
-                ...n,
-                image: MOCK_NEWS[i % MOCK_NEWS.length].image // Cycle through mock images
-            }));
-        } else {
-            // Fallback to MOCK if AI fails
-            console.warn("⚠️ AI News Generation Failed, using Mock Backup");
-            // Add a small random element to mock news to make it feel slightly dynamic? 
-            // Nah, just serve mock for stability.
-            // But we should re-analyze mock news if we haven't already.
-            newsData = await Promise.all(MOCK_NEWS.map(async (news) => {
-                // If mocking, we might want to re-analyze to get fresh "impact" or "summary" if logic changed? 
-                // Actually the previous logic was fine for mock.
-                // let's just use the static mock news BUT maybe shuffle them?
-                return news;
-                // The previous logic was enriching mock news. 
-                // Since we want dynamic news, we rely on generateMarketNews mainly.
-                // If that fails, we fall back to the enriched mock news.
-                const aiAnalysis = await aiService.analyzeMarketNews(news.headline, news.content);
-                return { ...news, ...aiAnalysis };
-            }));
+        // 3. Dynamic Fallback: Generate news from REAL stock movements if AI failed or empty
+        if (newsData.length === 0) {
+            console.log("📡 Generating Dynamic Fallback from Market Prices...");
+            const Stock = require("../models/Stock");
+            const stocks = await Stock.find().sort({ changePercent: -1 }); // Top gainers first
+            
+            if (stocks.length > 0) {
+                // Pick top 3 gainers and 2 losers
+                const gainers = stocks.slice(0, 3);
+                const losers = stocks.slice(-2);
+                const combined = [...gainers, ...losers];
+
+                newsData = combined.map((s, i) => {
+                    const isGainer = s.changePercent >= 0;
+                    const verbs = isGainer 
+                        ? ["surges", "jumps", "rallies", "climbs"] 
+                        : ["slumps", "slides", "drags", "dips"];
+                    const verb = verbs[Math.floor(Math.random() * verbs.length)];
+                    
+                    return {
+                        id: `fallback-${s.symbol}-${Date.now()}`,
+                        headline: `${s.name} (${s.symbol}) ${verb} ${Math.abs(s.changePercent)}% on market optimism`,
+                        content: `${s.name} witnessed strong ${isGainer ? 'buying' : 'selling'} pressure today as it reached ₹${s.price}. Investors are ${isGainer ? 'bullish' : 'cautious'} on the stock's near-term outlook.`,
+                        source: ["Mint", "Moneycontrol", "Reuters", "CNBC"][i % 4],
+                        time: "Just Now",
+                        sentiment: isGainer ? "Bullish" : "Bearish",
+                        impact: [s.symbol],
+                        image: MOCK_NEWS[i % MOCK_NEWS.length].image
+                    };
+                });
+            } else {
+                // Last resort: static mock
+                newsData = MOCK_NEWS;
+            }
         }
 
         processedNewsCache = newsData;
-        lastFetchDate = today;
+        lastFetchDate = now;
 
         res.json(newsData);
 

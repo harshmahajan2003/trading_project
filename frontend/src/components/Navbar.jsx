@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Bell, User, Search, Clock, CheckCircle2, XCircle, Rocket, Loader2 } from 'lucide-react';
+import { Bell, User, Search, Clock, CheckCircle2, XCircle, Rocket, Loader2, Newspaper } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { notificationService, stockService } from '../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -126,9 +126,10 @@ const Navbar = () => {
                 {/* Add News Button - Hidden on mobile, shown on desktop */}
                 <button
                     onClick={() => navigate('/news')}
-                    className="hidden md:flex text-slate-400 hover:text-indigo-400 transition-colors p-2 text-xs font-bold uppercase tracking-widest items-center gap-2"
+                    className="hidden md:flex text-slate-400 hover:text-indigo-400 transition-colors p-2 text-[10px] font-bold uppercase tracking-widest items-center gap-2 bg-slate-800/40 rounded-full px-4 border border-slate-700/50 hover:border-indigo-500/30 group"
                     title="Market News"
                 >
+                    <Newspaper className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
                     NEWS
                 </button>
                 <div className="relative">
