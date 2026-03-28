@@ -52,9 +52,8 @@ let lastFetchDate = null; // To track "Today"
 const getLatestNews = async (req, res) => {
     try {
         const now = new Date();
-        const cacheExpiry = 60 * 1000; // 1 minute cache (very short for real-time feel)
+        const cacheExpiry = 60 * 1000; 
 
-        // 1. Return cached data if available and fresh
         if (processedNewsCache && (now - lastFetchDate < cacheExpiry)) {
             return res.json(processedNewsCache);
         }
@@ -62,7 +61,6 @@ const getLatestNews = async (req, res) => {
         console.log("🔄 Fetching FRESH Market News...");
         let newsData = [];
 
-        // 2. Try fetching from AI
         try {
             const aiNews = await aiService.generateMarketNews();
             if (aiNews && aiNews.length > 0) {
@@ -76,33 +74,53 @@ const getLatestNews = async (req, res) => {
             console.warn("⚠️ AI News Generation Failed:", aiErr.message);
         }
 
-        // 3. Dynamic Fallback: Generate news from REAL stock movements if AI failed or empty
         if (newsData.length === 0) {
             console.log("📡 Generating Dynamic Fallback from Market Prices...");
             const Stock = require("../models/Stock");
             const stocks = await Stock.find().sort({ changePercent: -1 }); 
             
             if (stocks.length > 0) {
-                // Shuffle or pick different ones to avoid "same news" feeing
-                const gainers = stocks.slice(0, 5); 
-                const losers = stocks.slice(-5);
-                const candidates = [...gainers, ...losers].sort(() => Math.random() - 0.5).slice(0, 5);
+                const gainers = stocks.slice(0, 8); 
+                const losers = stocks.slice(-8);
+                const candidates = [...gainers, ...losers].sort(() => Math.random() - 0.5).slice(0, 6);
+
+                const gainerPhrases = [
+                    "shares rally on strong market sentiment",
+                    "hits intraday high as buyers flock in",
+                    "outperforms peers following positive price action",
+                    "sees massive buying interest at current levels",
+                    "surges as technical indicators turn bullish",
+                    "shares climb as investors anticipate growth"
+                ];
+
+                const loserPhrases = [
+                    "under selling pressure as momentum slows",
+                    "slides on profit booking after recent moves",
+                    "drags as market sentiment turns cautious",
+                    "witnesses sharp decline in intraday trade",
+                    "underperforms as bears take control",
+                    "shares dip following sector-wide correction"
+                ];
 
                 newsData = candidates.map((s, i) => {
                     const isGainer = s.changePercent >= 0;
-                    const verbs = isGainer 
-                        ? ["surges", "jumps", "rallies", "climbs", "outperforms"] 
-                        : ["slumps", "slides", "drags", "dips", "underperforms"];
-                    const verb = verbs[Math.floor(Math.random() * verbs.length)];
+                    const phrasePool = isGainer ? gainerPhrases : loserPhrases;
+                    const phrase = phrasePool[Math.floor(Math.random() * phrasePool.length)];
                     
-                    const headline = `${s.name} (${s.symbol}) ${verb} ${Math.abs(s.changePercent)}% today`;
-                    const content = `${s.name} witnessed strong ${isGainer ? 'buying' : 'selling'} pressure today as it reached ₹${s.price}. Experts suggest ${isGainer ? 'bullish' : 'bearish'} momentum may continue.`;
+                    const headline = `${s.name} (${s.symbol}) ${phrase}`;
+                    const content = `The stock of ${s.name} is currently trading at ₹${s.price.toLocaleString('en-IN')}, reflecting a ${s.changePercent}% change. Market analysts are closely watching the ${s.symbol} chart for key support and resistance levels as trading volume remains ${isGainer ? 'robust' : 'volatile'}.`;
+
+                    const summaries = [
+                        `${s.symbol} continues to show ${isGainer ? 'strength' : 'weakness'} with a ${Math.abs(s.changePercent)}% move today.`,
+                        `Current price of ${s.name} stands at ₹${s.price}, trending ${isGainer ? 'upwards' : 'downwards'}.`,
+                        `Investors are reacting to recent price action in ${s.symbol}, which is currently at ₹${s.price}.`
+                    ];
 
                     return {
                         id: `fallback-${s.symbol}-${Date.now()}-${i}`,
                         headline,
                         content,
-                        summary: `${s.symbol} is currently trading at ${s.price} with a ${s.changePercent}% change.`,
+                        summary: summaries[Math.floor(Math.random() * summaries.length)],
                         source: ["Mint", "Moneycontrol", "Reuters", "CNBC", "Bloomberg"][i % 5],
                         time: "Just Now",
                         sentiment: isGainer ? "Bullish" : "Bearish",
