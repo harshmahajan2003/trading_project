@@ -103,7 +103,6 @@ const generateDailyBrief = async (userName) => {
  * @returns {Promise<Array<{headline: string, content: string, source: string, time: string, sentiment: string, impact: string[]}>>}
  */
 const generateMarketNews = async () => {
-    // 🛡️ Prevent Crash
     if (!process.env.GROQ_API_KEY) return [];
 
     try {
@@ -122,27 +121,32 @@ const generateMarketNews = async () => {
         Format: JSON Array of objects.
         Fields:
         - "headline": Catchy, professional headline.
-        - "content": 2 concise sentences summarizing the news.
+        - "content": 2-3 detailed sentences summarizing the news details.
+        - "summary": A very short, punchy 1-sentence summary (max 15 words) for quick reading.
         - "source": Credentials like "Mint", "Moneycontrol", "CNBC", "Reuters", "Financial Express".
         - "time": Randomly pick between "10 mins ago", "1 hour ago", "2 hours ago".
         - "sentiment": "Bullish", "Bearish", "Neutral".
         - "impact": Array of tickers (e.g. ["RELIANCE", "NIFTY"]).
 
-        Example:
-        [
-            { "headline": "Nifty Hits All-Time High Led by IT Rally", "content": "Indian markets surged today as IT stocks rallied on positive global cues. TCS and Infosys were top gainers.", "source": "Mint", "time": "30 mins ago", "sentiment": "Bullish", "impact": ["TCS", "INFY"] }
-        ]
+        Return ONLY the raw JSON array. No markdown code blocks.
         `;
 
         const completion = await groq.chat.completions.create({
             messages: [{ role: "user", content: prompt }],
-            model: "mixtral-8x7b-32768", // Good balance of speed and creativity
-            temperature: 0.8, // Higher creativity for diverse news
+            model: "mixtral-8x7b-32768",
+            temperature: 0.7,
         });
 
-        const result = completion.choices[0]?.message?.content || "[]";
-        const cleanJson = result.replace(/```json/g, "").replace(/```/g, "").trim();
-        return JSON.parse(cleanJson);
+        let result = completion.choices[0]?.message?.content || "[]";
+        
+        // 🧪 Robust JSON Extraction
+        // If the AI wrapped it in ```json or ``` blocks, extract just the array/object
+        const jsonMatch = result.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+            result = jsonMatch[0];
+        }
+
+        return JSON.parse(result);
 
     } catch (error) {
         console.error("🔥 GROQ NEWS GEN ERROR:", error.message);
