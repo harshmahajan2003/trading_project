@@ -34,7 +34,7 @@ const isMarketOpen = () => {
 };
 
 const startPriceEngine = (io) => {
-  console.log("🚀 Price Engine Started (Hybrid Mode via Axios)");
+  console.log("🚀 Hybrid Price Engine Started (Live + Market Simulation)");
 
   setInterval(async () => {
     try {
@@ -42,57 +42,49 @@ const startPriceEngine = (io) => {
       if (stocks.length === 0) return;
 
       const marketOpen = isMarketOpen();
-      let livePricesMap = {};
-
-      if (marketOpen) {
-        try {
-          // Fetch live prices for Indian stocks (append .NS for National Stock Exchange)
-          const symbols = stocks.map(s => s.symbol.includes('.') ? s.symbol : `${s.symbol}.NS`).join(',');
-          const response = await axios.get(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`, {
-            headers: {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-              'Accept': 'application/json',
-              'Referer': 'https://finance.yahoo.com/'
-            }
-          });
-
-          if (response.data && response.data.quoteResponse && response.data.quoteResponse.result) {
-            response.data.quoteResponse.result.forEach(quote => {
-              const cleanSymbol = quote.symbol.split('.')[0];
-              livePricesMap[cleanSymbol] = {
-                price: quote.regularMarketPrice,
-                change: quote.regularMarketChangePercent,
-                volume: quote.regularMarketVolume
-              };
-            });
-          }
-        } catch (apiErr) {
-          console.error("❌ Yahoo Finance API Fetch Error:", apiErr.message);
-        }
-      }
-
+      
       for (const stock of stocks) {
         let newPrice, displayChange, newVolume;
 
-        const liveData = livePricesMap[stock.symbol];
+        if (marketOpen) {
+          try {
+            // Try LIVE FETCH via Yahoo Finance Chart API
+            const yahooSymbol = stock.symbol.includes('.') ? stock.symbol : `${stock.symbol}.NS`;
+            const response = await axios.get(`https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?interval=1m&range=1d`, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': 'application/json',
+                'Referer': 'https://finance.yahoo.com/'
+              },
+              timeout: 5000
+            });
 
-        if (marketOpen && liveData) {
-          // Use Real Data
-          newPrice = Number(liveData.price.toFixed(2));
-          displayChange = Number(liveData.change.toFixed(2));
-          newVolume = liveData.volume;
-        } else if (marketOpen) {
-          // Fallback to Simulation ONLY if market is open but API failed
-          const changePercent = (Math.random() * 2 - 1) * 0.01;
+            const result = response.data?.chart?.result?.[0];
+            if (result && result.meta) {
+              const meta = result.meta;
+              newPrice = Number(meta.regularMarketPrice.toFixed(2));
+              const prevClose = meta.previousClose || stock.price;
+              displayChange = Number(((newPrice - prevClose) / prevClose * 100).toFixed(2));
+              newVolume = meta.regularMarketVolume || stock.volume;
+            } else {
+              throw new Error("Invalid API structure");
+            }
+          } catch (apiErr) {
+            // Fallback to Simulation for this stock if API fails during market hours
+            const changePercent = (Math.random() * 2 - 1) * 0.005;
+            const priceChange = stock.price * changePercent;
+            newPrice = Number((stock.price + priceChange).toFixed(2));
+            displayChange = Number((changePercent * 100).toFixed(2));
+            newVolume = (stock.volume || 0) + Math.floor(Math.random() * 2000) + 500;
+          }
+        } else {
+          // MARKET CLOSED: Run Simulation starting from last known price
+          // This allows users to trade 24/7 if they want, but with fake movements
+          const changePercent = (Math.random() * 2 - 1) * 0.002;
           const priceChange = stock.price * changePercent;
           newPrice = Number((stock.price + priceChange).toFixed(2));
           displayChange = Number((changePercent * 100).toFixed(2));
-          newVolume = (stock.volume || 0) + Math.floor(Math.random() * 5000) + 1000;
-        } else {
-          // MARKET CLOSED: Keep prices STATIC (User request: "market value sahi nahi hai")
-          newPrice = stock.price;
-          displayChange = stock.changePercent || 0;
-          newVolume = stock.volume || 0;
+          newVolume = (stock.volume || 0) + Math.floor(Math.random() * 500) + 100;
         }
 
         stock.price = newPrice;
@@ -120,14 +112,14 @@ const startPriceEngine = (io) => {
         processOrders(io, stock.symbol, newPrice);
       }
 
-      if (Math.random() > 0.95) {
-        console.log(`⚙️ Engine Ticking: ${marketOpen ? 'LIVE' : 'SIMULATED'} Mode`);
+      if (Math.random() > 0.9) {
+        console.log(`📡 Price Sync: ${marketOpen ? 'LIVE MARKET' : 'SIMULATION MODE'}`);
       }
 
     } catch (err) {
-      console.error("Price Engine Error:", err.message);
+      console.error("🔥 Price Engine Error (Global):", err.message);
     }
-  }, 10000); // Increased interval to 10s to avoid API rate limits
+  }, 10000); // 10s sync interval
 };
 
 module.exports = startPriceEngine;

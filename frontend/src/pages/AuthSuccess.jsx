@@ -13,13 +13,13 @@ const AuthSuccess = () => {
         const token = searchParams.get('token');
         if (token) {
             // Store token first for auth interceptor
-            localStorage.setItem('trading_user', JSON.stringify({ token }));
+            sessionStorage.setItem('trading_user', JSON.stringify({ token }));
 
             // Now fetch profile
             authService.getProfile()
                 .then(user => {
                     const fullUser = { ...user, token };
-                    localStorage.setItem('trading_user', JSON.stringify(fullUser));
+                    sessionStorage.setItem('trading_user', JSON.stringify(fullUser));
                     navigate('/dashboard');
                 })
                 .catch(err => {
