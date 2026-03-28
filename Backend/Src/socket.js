@@ -22,9 +22,9 @@ const initSocket = (server) => {
   });
 
   // 🔥 START ENGINES AFTER IO IS READY
-  setTimeout(() => {
+  setTimeout(async () => {
     if (io) {
-      startPriceEngine(io);
+      await startPriceEngine(io);
       require("./engine/candleEngine")();
       console.log("📈 All Engines Live");
     }

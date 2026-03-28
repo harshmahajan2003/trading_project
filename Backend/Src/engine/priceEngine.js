@@ -33,8 +33,53 @@ const isMarketOpen = () => {
   return totalMinutes >= openTime && totalMinutes <= closeTime;
 };
 
-const startPriceEngine = (io) => {
+// New Helper to sync a single stock
+const syncStock = async (stock) => {
+  try {
+    const yahooSymbol = stock.symbol.includes('.') ? stock.symbol : `${stock.symbol}.NS`;
+    const response = await axios.get(`https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?interval=1m&range=1d`, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'application/json',
+        'Referer': 'https://finance.yahoo.com/'
+      },
+      timeout: 5000
+    });
+
+    const result = response.data?.chart?.result?.[0];
+    if (result && result.meta) {
+      const meta = result.meta;
+      const price = Number(meta.regularMarketPrice.toFixed(2));
+      const prevClose = meta.previousClose || stock.price;
+      const change = Number(((price - prevClose) / prevClose * 100).toFixed(2));
+      const volume = meta.regularMarketVolume || stock.volume;
+
+      stock.price = price;
+      stock.changePercent = change;
+      stock.volume = volume;
+      await stock.save();
+      return true;
+    }
+  } catch (err) {
+    // Silently fail for individual stocks to keep engine running
+  }
+  return false;
+};
+
+const startPriceEngine = async (io) => {
   console.log("🚀 Hybrid Price Engine Started (Live + Market Simulation)");
+
+  // --- INITIAL SYNC ON STARTUP ---
+  try {
+    const initialStocks = await Stock.find();
+    console.log(`📡 Performing initial price sync for ${initialStocks.length} assets...`);
+    for (const s of initialStocks) {
+      await syncStock(s);
+    }
+    console.log("✅ Initial Sync Complete");
+  } catch (err) {
+    console.error("❌ Initial Sync Failed:", err.message);
+  }
 
   setInterval(async () => {
     try {
@@ -48,26 +93,13 @@ const startPriceEngine = (io) => {
 
         if (marketOpen) {
           try {
-            // Try LIVE FETCH via Yahoo Finance Chart API
-            const yahooSymbol = stock.symbol.includes('.') ? stock.symbol : `${stock.symbol}.NS`;
-            const response = await axios.get(`https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?interval=1m&range=1d`, {
-              headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                'Accept': 'application/json',
-                'Referer': 'https://finance.yahoo.com/'
-              },
-              timeout: 5000
-            });
-
-            const result = response.data?.chart?.result?.[0];
-            if (result && result.meta) {
-              const meta = result.meta;
-              newPrice = Number(meta.regularMarketPrice.toFixed(2));
-              const prevClose = meta.previousClose || stock.price;
-              displayChange = Number(((newPrice - prevClose) / prevClose * 100).toFixed(2));
-              newVolume = meta.regularMarketVolume || stock.volume;
+            const synced = await syncStock(stock);
+            if (synced) {
+              newPrice = stock.price;
+              displayChange = stock.changePercent;
+              newVolume = stock.volume;
             } else {
-              throw new Error("Invalid API structure");
+              throw new Error("API failed");
             }
           } catch (apiErr) {
             // Fallback to Simulation for this stock if API fails during market hours
