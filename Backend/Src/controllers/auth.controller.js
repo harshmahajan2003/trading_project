@@ -36,7 +36,12 @@ const register = async (req, res) => {
     const user = await User.create({ name: trimmedName, email: trimmedEmail, password });
     await Wallet.create({ user: user._id });
 
-    res.status(201).json({ token: genToken(user._id) });
+    res.status(201).json({ 
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      token: genToken(user._id) 
+    });
   } catch (err) {
     res.status(500).json({ message: "Registration failed" });
   }
@@ -56,7 +61,12 @@ const login = async (req, res) => {
   if (!user || !(await user.matchPassword(password)))
     return res.status(401).json({ message: "Invalid credentials" });
 
-  res.json({ token: genToken(user._id) });
+  res.json({ 
+    _id: user._id, 
+    name: user.name, 
+    email: user.email, 
+    token: genToken(user._id) 
+  });
 
   // 🧠 AI BACKGROUND TASK: Generate Daily Wise Words
   try {
