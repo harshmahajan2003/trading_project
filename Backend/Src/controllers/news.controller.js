@@ -52,11 +52,10 @@ let lastFetchDate = null; // To track "Today"
 const getLatestNews = async (req, res) => {
     try {
         const now = new Date();
-        const cacheExpiry = 30 * 60 * 1000; // 30 minutes cache
+        const cacheExpiry = 60 * 1000; // 1 minute cache (very short for real-time feel)
 
         // 1. Return cached data if available and fresh
         if (processedNewsCache && (now - lastFetchDate < cacheExpiry)) {
-            console.log("✅ Serving Cached News (Last Sync:", lastFetchDate.toLocaleTimeString(), ")");
             return res.json(processedNewsCache);
         }
 
@@ -81,26 +80,30 @@ const getLatestNews = async (req, res) => {
         if (newsData.length === 0) {
             console.log("📡 Generating Dynamic Fallback from Market Prices...");
             const Stock = require("../models/Stock");
-            const stocks = await Stock.find().sort({ changePercent: -1 }); // Top gainers first
+            const stocks = await Stock.find().sort({ changePercent: -1 }); 
             
             if (stocks.length > 0) {
-                // Pick top 3 gainers and 2 losers
-                const gainers = stocks.slice(0, 3);
-                const losers = stocks.slice(-2);
-                const combined = [...gainers, ...losers];
+                // Shuffle or pick different ones to avoid "same news" feeing
+                const gainers = stocks.slice(0, 5); 
+                const losers = stocks.slice(-5);
+                const candidates = [...gainers, ...losers].sort(() => Math.random() - 0.5).slice(0, 5);
 
-                newsData = combined.map((s, i) => {
+                newsData = candidates.map((s, i) => {
                     const isGainer = s.changePercent >= 0;
                     const verbs = isGainer 
-                        ? ["surges", "jumps", "rallies", "climbs"] 
-                        : ["slumps", "slides", "drags", "dips"];
+                        ? ["surges", "jumps", "rallies", "climbs", "outperforms"] 
+                        : ["slumps", "slides", "drags", "dips", "underperforms"];
                     const verb = verbs[Math.floor(Math.random() * verbs.length)];
                     
+                    const headline = `${s.name} (${s.symbol}) ${verb} ${Math.abs(s.changePercent)}% today`;
+                    const content = `${s.name} witnessed strong ${isGainer ? 'buying' : 'selling'} pressure today as it reached ₹${s.price}. Experts suggest ${isGainer ? 'bullish' : 'bearish'} momentum may continue.`;
+
                     return {
-                        id: `fallback-${s.symbol}-${Date.now()}`,
-                        headline: `${s.name} (${s.symbol}) ${verb} ${Math.abs(s.changePercent)}% on market optimism`,
-                        content: `${s.name} witnessed strong ${isGainer ? 'buying' : 'selling'} pressure today as it reached ₹${s.price}. Investors are ${isGainer ? 'bullish' : 'cautious'} on the stock's near-term outlook.`,
-                        source: ["Mint", "Moneycontrol", "Reuters", "CNBC"][i % 4],
+                        id: `fallback-${s.symbol}-${Date.now()}-${i}`,
+                        headline,
+                        content,
+                        summary: `${s.symbol} is currently trading at ${s.price} with a ${s.changePercent}% change.`,
+                        source: ["Mint", "Moneycontrol", "Reuters", "CNBC", "Bloomberg"][i % 5],
                         time: "Just Now",
                         sentiment: isGainer ? "Bullish" : "Bearish",
                         impact: [s.symbol],
@@ -108,7 +111,6 @@ const getLatestNews = async (req, res) => {
                     };
                 });
             } else {
-                // Last resort: static mock
                 newsData = MOCK_NEWS;
             }
         }
