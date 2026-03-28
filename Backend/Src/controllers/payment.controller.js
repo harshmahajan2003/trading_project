@@ -57,8 +57,17 @@ exports.createCheckoutSession = async (req, res) => {
         console.log("✅ STRIPE SESSION CREATED:", session.id);
         res.json({ id: session.id, url: session.url });
     } catch (err) {
-        console.error("🔥 STRIPE SESSION ERROR:", err);
-        res.status(500).json({ message: "Payment initialization failed", detail: err.message });
+        console.error("🔥 [STRIPE ERROR DETAIL]:", {
+            message: err.message,
+            stack: err.stack,
+            type: err.type,
+            raw: err.raw
+        });
+        res.status(500).json({ 
+            message: "Payment initialization failed", 
+            detail: err.message,
+            code: err.type === 'StripeAuthenticationError' ? 'AUTH_FAILED' : 'GATEWAY_ERROR'
+        });
     }
 };
 

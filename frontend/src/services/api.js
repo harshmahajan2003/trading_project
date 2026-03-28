@@ -6,7 +6,7 @@ const api = axios.create({
 
 // Interceptor to add auth token
 api.interceptors.request.use((config) => {
-    const user = JSON.parse(localStorage.getItem('trading_user'));
+    const user = JSON.parse(sessionStorage.getItem('trading_user'));
     if (user && user.token) {
         config.headers.Authorization = `Bearer ${user.token}`;
     }
@@ -16,19 +16,19 @@ api.interceptors.request.use((config) => {
 export const authService = {
     login: async (email, password) => {
         const res = await api.post('/auth/login', { email, password });
-        if (res.data) localStorage.setItem('trading_user', JSON.stringify(res.data));
+        if (res.data) sessionStorage.setItem('trading_user', JSON.stringify(res.data));
         return res.data;
     },
     register: async (name, email, password) => {
         const res = await api.post('/auth/', { name, email, password });
-        if (res.data) localStorage.setItem('trading_user', JSON.stringify(res.data));
+        if (res.data) sessionStorage.setItem('trading_user', JSON.stringify(res.data));
         return res.data;
     },
     logout: () => {
-        localStorage.removeItem('trading_user');
+        sessionStorage.removeItem('trading_user');
     },
     getCurrentUser: () => {
-        const user = localStorage.getItem('trading_user');
+        const user = sessionStorage.getItem('trading_user');
         return user ? JSON.parse(user) : null;
     },
     getProfile: async () => {

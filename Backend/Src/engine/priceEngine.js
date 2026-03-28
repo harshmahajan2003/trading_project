@@ -48,7 +48,13 @@ const startPriceEngine = (io) => {
         try {
           // Fetch live prices for Indian stocks (append .NS for National Stock Exchange)
           const symbols = stocks.map(s => s.symbol.includes('.') ? s.symbol : `${s.symbol}.NS`).join(',');
-          const response = await axios.get(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`);
+          const response = await axios.get(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+              'Accept': 'application/json',
+              'Referer': 'https://finance.yahoo.com/'
+            }
+          });
 
           if (response.data && response.data.quoteResponse && response.data.quoteResponse.result) {
             response.data.quoteResponse.result.forEach(quote => {
@@ -61,7 +67,7 @@ const startPriceEngine = (io) => {
             });
           }
         } catch (apiErr) {
-          console.error("Yahoo Finance API Fetch Error (Falling back to simulation):", apiErr.message);
+          console.error("❌ Yahoo Finance API Fetch Error:", apiErr.message);
         }
       }
 
@@ -75,13 +81,18 @@ const startPriceEngine = (io) => {
           newPrice = Number(liveData.price.toFixed(2));
           displayChange = Number(liveData.change.toFixed(2));
           newVolume = liveData.volume;
-        } else {
-          // Fallback to Simulation (Random Walk)
+        } else if (marketOpen) {
+          // Fallback to Simulation ONLY if market is open but API failed
           const changePercent = (Math.random() * 2 - 1) * 0.01;
           const priceChange = stock.price * changePercent;
           newPrice = Number((stock.price + priceChange).toFixed(2));
           displayChange = Number((changePercent * 100).toFixed(2));
           newVolume = (stock.volume || 0) + Math.floor(Math.random() * 5000) + 1000;
+        } else {
+          // MARKET CLOSED: Keep prices STATIC (User request: "market value sahi nahi hai")
+          newPrice = stock.price;
+          displayChange = stock.changePercent || 0;
+          newVolume = stock.volume || 0;
         }
 
         stock.price = newPrice;
